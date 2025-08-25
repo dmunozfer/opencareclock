@@ -64,91 +64,18 @@ body {
 /* ===== Layout principal ===== */
 .container {
   flex: 1;
-  display: flex; /* Fallback iOS9 */
+  display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-}
-
-/* Landscape: reloj izquierda, panel derecha (fallback Flex) */
-@media (orientation: landscape) {
-  .container {
-    flex-direction: row;
-  }
-  .clock-panel,
-  .side-panel {
-    flex: 1 1 0;
-  }
-  .side-panel {
-    display: flex;
-    gap: 16px;
-    align-content: flex-start;
-    flex-direction: column;
-  }
-}
-
-/* Portrait: reloj arriba, panel abajo (fallback Flex) */
-@media (orientation: portrait) {
-  .container {
-    flex-direction: column;
-  }
-  .side-panel {
-    display: flex;
-    gap: 16px;
-    align-content: flex-start;
-    flex-direction: column;
-  }
-}
-
-/* Activar Grid sólo si está soportado */
-@supports (display: grid) {
-  .container {
-    display: grid;
-  }
-  /* Landscape con Grid */
-  @media (orientation: landscape) {
-    .container {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr;
-    }
-    .clock-panel {
-      grid-column: 1;
-    }
-    .side-panel {
-      grid-column: 2;
-      display: grid;
-      gap: 16px;
-      align-content: start;
-    }
-  }
-  /* Portrait con Grid */
-  @media (orientation: portrait) {
-    .container {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-    }
-    .clock-panel {
-      grid-row: 1;
-    }
-    .side-panel {
-      grid-row: 2;
-      display: grid;
-      gap: 16px;
-      align-content: start;
-    }
-  }
-}
-
-/* Ocultar panel si hoy no hay contenido (solo en kiosko) */
-.kiosk.no-notes .side-panel {
-  display: none !important;
-}
-.kiosk.no-notes .container {
-  grid-template-columns: 1fr !important;
-  grid-template-rows: 1fr !important;
+  overflow: hidden;
 }
 
 /* ===== Reloj ===== */
+.clock-panel {
+  flex-shrink: 0;
+}
+
 .clock {
   text-align: center;
   padding: 12px 8px 20px;
@@ -177,24 +104,60 @@ body {
   opacity: 0.9;
 }
 
+/* ===== Panel lateral ===== */
+.side-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .section-title {
   font-size: 18px;
   font-weight: 700;
   margin: 0 0 12px;
   opacity: 0.9;
 }
+
 .row {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
+  margin-bottom: 12px;
 }
 
+/* ===== Días de la semana ===== */
+.days {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.day {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.day input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* ===== Notas ===== */
 .notes-list {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
 }
+
 .notes-list li {
   background: #b59f00;
   color: #1f1a00;
@@ -207,7 +170,7 @@ body {
 
 /* Nota con layout para texto + badges */
 .notes-list li .note-text {
-  margin-bottom: 6px;
+  margin-bottom: 0px;
 }
 
 /* Badges de días (LMXJVSD) compartidos */
@@ -216,6 +179,7 @@ body {
   gap: 6px;
   flex-wrap: wrap;
 }
+
 .day-badge {
   display: inline-block;
   padding: 2px 8px;
@@ -227,102 +191,80 @@ body {
   color: currentColor;
 }
 
-/* ===== Lista de recordatorios (tabla con 4 columnas) ===== */
+/* ===== Lista de recordatorios ===== */
 .reminders-today {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
-  display: block; /* Fallback */
-}
-@supports (display: grid) {
-  .reminders-today {
-    display: grid;
-    gap: 10px;
-  }
-}
-
-/* Encabezados de sección */
-.section-header {
-  font-weight: 800;
-  opacity: 0.9;
-  padding: 6px 4px;
-}
-.section-header.collapsible {
-  cursor: pointer;
-}
-.section-header.collapsible:after {
-  content: "▼";
-  float: right;
-  opacity: 0.8;
-}
-.section-header.collapsible.collapsed:after {
-  content: "▲";
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .reminder {
-  display: flex; /* Fallback */
+  display: flex;
   align-items: center;
   border-radius: 14px;
-  padding: 12px 10px;
+  padding: 16px 12px;
   color: #fff;
   font-weight: 700;
-}
-@supports (display: grid) {
-  .reminder {
-    display: grid;
-    grid-template-columns: 64px 120px 1fr auto; /* icono | hora | texto | acción */
-  }
+  gap: 12px;
+  min-height: 60px;
 }
 
-/* Celdas */
+/* Icono */
 .reminder .icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
 }
-.reminder .icon-wrap {
-  width: 64px;
-}
+
 .reminder .icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.25); /* círculo de contraste siempre visible */
+  background: rgba(0, 0, 0, 0.25);
   color: #fff;
 }
+
+/* Hora */
 .reminder .time {
-  font-size: 28px;
-  text-align: center;
-}
-.reminder .time {
-  width: 120px;
-}
-.reminder .label {
   font-size: 24px;
-  padding: 0 8px;
-}
-.reminder .label {
-  flex: 1 1 auto;
+  font-weight: 700;
+  min-width: 80px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
+/* Texto */
+.reminder .label {
+  font-size: 20px;
+  flex: 1;
+  padding: 0 8px;
+}
+
+/* Botón de completado */
 .done-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
-}
-.done-btn {
-  margin-left: 8px;
+  flex-shrink: 0;
 }
 
 /* ===== Estados con colores accesibles ===== */
@@ -353,11 +295,6 @@ body {
 }
 .admin-reminders .reminder .icon-wrap {
   display: none; /* ocultar icono */
-}
-@supports (display: grid) {
-  .admin-reminders .reminder {
-    grid-template-columns: 140px 1fr auto; /* hora | texto | badges */
-  }
 }
 
 /* Badge atenuado para días no activos */
@@ -390,10 +327,13 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   user-select: none;
   -webkit-user-select: none;
+  flex-shrink: 0;
 }
+
 .footer .dot {
   opacity: 0.5;
 }
+
 @supports not (position: sticky) {
   .footer {
     position: fixed;
@@ -420,6 +360,7 @@ body {
   font-weight: 700;
   pointer-events: none; /* no bloquear clics detrás */
 }
+
 .alert.show {
   display: block;
 }
@@ -429,15 +370,18 @@ body {
   background: #f6f7fb;
   color: #191b1f;
 }
+
 .theme-light .toolbar,
 .theme-light .card {
   background: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.08);
 }
+
 .theme-contrast {
   background: #000;
   color: #00ff2a;
 }
+
 .theme-contrast .card,
 .theme-contrast .toolbar {
   background: #000;
@@ -452,6 +396,7 @@ body:not(.theme-light) .time {
   background-color: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.35);
 }
+
 body:not(.theme-light) select option {
   background-color: #111;
   color: #fff;
@@ -461,9 +406,26 @@ body:not(.theme-light) select option {
 .kiosk .toolbar {
   display: none;
 }
+
 .kiosk #notesCard .row,
 .kiosk #remindersCard .row {
   display: none; /* ocultar formularios en kiosko */
+}
+
+/* Ocultar panel si hoy no hay contenido (solo en kiosko) */
+.kiosk.no-notes .side-panel {
+  display: none !important;
+}
+
+.kiosk.no-notes .container {
+  flex-direction: column !important;
+}
+
+.kiosk.no-notes .clock-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===== Pantalla completa en kiosko ===== */
@@ -491,193 +453,412 @@ body:not(.theme-light) select option {
 .admin-mode .clock-panel {
   display: none;
 }
+
 /* En administración, el panel lateral ocupa todo el ancho */
 .admin-mode .side-panel {
-  grid-column: 1 / -1 !important;
+  flex: 1;
+  width: 100%;
 }
 
 .kiosk .footer {
   opacity: 0.6;
 }
+
 .kiosk #time {
   font-size: 18vw;
 }
+
 .kiosk #daypart {
   font-size: 7vw;
 }
+
 .kiosk #date {
   font-size: 6vw;
-}
-
-/* Ajustes responsive adicionales para kiosko */
-@media (max-width: 600px) {
-  .kiosk .reminder {
-    grid-template-columns: 48px 96px 1fr 48px;
-    padding: 10px 8px;
-  }
-  .kiosk .reminder .time {
-    font-size: 22px;
-  }
-  .kiosk .reminder .label {
-    font-size: 18px;
-  }
-}
-
-/* Ajuste kiosko para iPad en horizontal (ancho intermedio) */
-@media (orientation: landscape) and (min-width: 768px) and (max-width: 1080px) {
-  .kiosk .reminders-today {
-    gap: 12px;
-  }
-  .kiosk .reminder {
-    grid-template-columns: 56px 110px 1fr 56px;
-    padding: 12px 10px;
-  }
-  .kiosk .reminder .time {
-    width: 110px;
-    font-size: 26px;
-    text-align: left;
-    padding-left: 6px;
-    border: 0;
-    outline: 0;
-    background: transparent;
-  }
-  .kiosk .reminder .label {
-    font-size: 20px;
-  }
-  /* Notas con mismo tamaño que recordatorios en iPad horizontal */
-  .kiosk .notes-list li {
-    font-size: 20px;
-    font-weight: 700;
-  }
-  .kiosk .done-btn {
-    width: 48px;
-    height: 48px;
-    font-size: 24px;
-  }
-}
-
-/* Refuerzo general en kiosko: la hora nunca debe mostrar borde ni fondo */
-.kiosk .reminder .time {
-  border: 0 !important;
-  outline: 0 !important;
-  background: transparent !important;
-}
-
-/* Notas en kiosko: igualar tipografía de recordatorios (por defecto) */
-.kiosk .notes-list li {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-/* En móviles muy pequeños ya había tamaño menor para recordatorios; igualamos notas */
-@media (max-width: 600px) {
-  .kiosk .notes-list li {
-    font-size: 18px;
-    font-weight: 700;
-  }
-}
-
-@media (min-width: 1200px) {
-  .kiosk #daypart {
-    font-size: 6vw;
-  }
-  .kiosk #date {
-    font-size: 5vw;
-  }
 }
 
 /* ===== Escalas ===== */
 .scale-100 {
   font-size: 100%;
 }
+
 .scale-120 {
   font-size: 120%;
 }
+
 .scale-140 {
   font-size: 140%;
 }
+
 .scale-160 {
   font-size: 160%;
 }
 
-/* Ajustes responsivos adicionales */
-@media (max-width: 800px) {
-  .reminder {
-    grid-template-columns: 56px 120px 1fr 56px;
+/* ===== Media Queries específicas para iPad 2 ===== */
+
+/* iPad 2 Portrait (768x1024) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .container {
+    padding: 20px;
+    gap: 20px;
   }
-  .reminder .time {
+
+  .clock {
+    padding: 16px 12px 24px;
+  }
+
+  #time {
+    font-size: 120px;
+  }
+
+  #daypart {
+    font-size: 48px;
+  }
+
+  #date {
+    font-size: 36px;
+  }
+
+  .side-panel {
+    gap: 20px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .notes-list li {
+    font-size: 20px;
+    padding: 16px 18px;
+    margin: 10px 0;
+  }
+
+  .reminders-today {
+    gap: 16px;
+  }
+
+  .reminder {
+    padding: 20px 16px;
+    min-height: 70px;
+    gap: 16px;
+  }
+
+  .reminder .icon-wrap {
+    width: 56px;
+    height: 56px;
+  }
+
+  .reminder .icon {
+    width: 48px;
+    height: 48px;
     font-size: 24px;
   }
+
+  .reminder .time {
+    font-size: 28px;
+    min-width: 90px;
+  }
+
+  .reminder .label {
+    font-size: 24px;
+  }
+
+  .done-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+  }
+
+  /* Inputs más grandes */
+  .input,
+  .time,
+  .select {
+    font-size: 18px;
+    padding: 10px 12px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+
+  .day input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .day {
+    font-size: 16px;
+  }
+}
+
+/* iPad 2 Landscape (1024x768) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .container {
+    flex-direction: row;
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .clock-panel {
+    flex: 0 0 auto;
+    width: 45%;
+  }
+
+  .side-panel {
+    flex: 1;
+    width: 55%;
+  }
+
+  .clock {
+    padding: 12px 8px 16px;
+  }
+
+  #time {
+    font-size: 80px;
+  }
+
+  #daypart {
+    font-size: 32px;
+  }
+
+  #date {
+    font-size: 24px;
+  }
+
+  .side-panel {
+    gap: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .notes-list li {
+    font-size: 18px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .reminders-today {
+    gap: 12px;
+  }
+
+  .reminder {
+    padding: 14px 12px;
+    min-height: 60px;
+    gap: 12px;
+  }
+
+  .reminder .icon-wrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .reminder .icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .reminder .time {
+    font-size: 24px;
+    min-width: 80px;
+  }
+
   .reminder .label {
     font-size: 20px;
   }
+
+  .done-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  /* Inputs más grandes */
+  .input,
+  .time,
+  .select {
+    font-size: 16px;
+    padding: 8px 10px;
+  }
+
+  .btn {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .day input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  .day {
+    font-size: 14px;
+  }
 }
 
-/* ===== Optimizaciones para iPad2 (1024x768, 132ppi) ===== */
-/* Horizontal (landscape) */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-  /* En administración, textos más grandes para iPad2 */
-  .admin-mode .section-title {
-    font-size: 22px;
+/* ===== Kiosko específico para iPad 2 ===== */
+
+/* Kiosko Portrait iPad 2 */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .kiosk #time {
+    font-size: 20vw;
   }
-  .admin-mode .notes-list li {
+
+  .kiosk #daypart {
+    font-size: 8vw;
+  }
+
+  .kiosk #date {
+    font-size: 6vw;
+  }
+
+  .kiosk .notes-list li {
+    font-size: 24px;
+    padding: 18px 20px;
+    margin-bottom: 0px;
+  }
+
+  .kiosk .reminder {
+    /* padding: 22px 18px; */
+    padding: 0px 18px;
+    min-height: 80px;
+  }
+
+  .kiosk .reminder .time {
+    font-size: 32px;
+  }
+
+  .kiosk .reminder .label {
+    font-size: 28px;
+  }
+
+  .kiosk .reminder .icon {
+    font-size: 28px;
+  }
+
+  .kiosk .done-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+}
+
+/* Kiosko Landscape iPad 2 */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .kiosk #time {
+    font-size: 16vw;
+  }
+
+  .kiosk #daypart {
+    font-size: 7vw;
+  }
+
+  .kiosk #date {
+    font-size: 6vw;
+  }
+
+  .kiosk .notes-list li {
     font-size: 20px;
     padding: 14px 16px;
   }
-  .admin-mode .reminder .label {
+
+  .kiosk .reminder {
+    padding: 16px 14px;
+    min-height: 70px;
+  }
+
+  .kiosk .reminder .time {
     font-size: 26px;
   }
-  .admin-mode .reminder .time {
-    font-size: 30px;
+
+  .kiosk .reminder .label {
+    font-size: 22px;
   }
-  .admin-mode .day-badge {
-    font-size: 14px;
-    padding: 4px 10px;
+
+  .kiosk .reminder .icon {
+    font-size: 24px;
   }
-  /* Inputs más grandes en administración */
-  .admin-mode .input,
-  .admin-mode .time,
-  .admin-mode .select {
-    font-size: 18px;
-    padding: 8px 10px;
-  }
-  /* Botones más grandes */
-  .admin-mode .btn {
-    font-size: 16px;
-    padding: 8px 12px;
+
+  .kiosk .done-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
   }
 }
 
-/* Vertical (portrait) */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-  /* En administración, textos más grandes para iPad2 vertical */
-  .admin-mode .section-title {
-    font-size: 24px;
+/* ===== Ajustes adicionales para iOS 9 ===== */
+/* Forzar flexbox en iOS 9 */
+@supports not (display: grid) {
+  .container {
+    display: -webkit-flex;
+    display: flex;
   }
-  .admin-mode .notes-list li {
-    font-size: 22px;
-    padding: 16px 18px;
+
+  .side-panel {
+    display: -webkit-flex;
+    display: flex;
   }
-  .admin-mode .reminder .label {
-    font-size: 28px;
+
+  .reminder {
+    display: -webkit-flex;
+    display: flex;
   }
-  .admin-mode .reminder .time {
-    font-size: 32px;
-  }
-  .admin-mode .day-badge {
-    font-size: 16px;
-    padding: 5px 12px;
-  }
-  /* Inputs más grandes en administración */
-  .admin-mode .input,
-  .admin-mode .time,
-  .admin-mode .select {
-    font-size: 20px;
-    padding: 10px 12px;
-  }
-  /* Botones más grandes */
-  .admin-mode .btn {
-    font-size: 18px;
-    padding: 10px 14px;
-  }
+}
+
+/* Mejorar scrolling en iOS 9 */
+.side-panel {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Asegurar que los botones sean táctiles en iOS 9 */
+.btn,
+.done-btn {
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+  min-height: 44px; /* Tamaño mínimo recomendado para iOS */
+}
+
+/* Mejorar visibilidad de inputs en iOS 9 */
+.input,
+.time,
+.select {
+  -webkit-appearance: none;
+  border-radius: 8px;
+}
+
+/* Asegurar que los checkboxes sean visibles en iOS 9 */
+.day input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+}
+
+.day input[type="checkbox"]:checked {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.day input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-weight: bold;
+  font-size: 12px;
 }
