@@ -164,8 +164,8 @@ body {
   border-radius: 12px;
   padding: 12px 14px;
   margin: 8px 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 /* Nota con layout para texto + badges */
@@ -258,13 +258,16 @@ body {
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
   flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
+  color: #000;
 }
 
 /* ===== Estados con colores accesibles ===== */
@@ -295,6 +298,12 @@ body {
 }
 .admin-reminders .reminder .icon-wrap {
   display: none; /* ocultar icono */
+}
+
+/* ===== Vista de administración para notas ===== */
+.admin-mode .notes-list li {
+  font-size: 20px;
+  font-weight: 700;
 }
 
 /* Badge atenuado para días no activos */
@@ -570,7 +579,9 @@ body:not(.theme-light) select option {
   .done-btn {
     width: 52px;
     height: 52px;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
   }
 
   /* Inputs más grandes */
@@ -594,6 +605,16 @@ body:not(.theme-light) select option {
   .day {
     font-size: 16px;
   }
+
+  /* Administración específica para iPad 2 Portrait */
+  .admin-mode .notes-list li {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .admin-mode .reminder .label {
+    font-size: 24px;
+  }
 }
 
 /* iPad 2 Landscape (1024x768) */
@@ -606,12 +627,12 @@ body:not(.theme-light) select option {
 
   .clock-panel {
     flex: 0 0 auto;
-    width: 45%;
+    width: 50%;
   }
 
   .side-panel {
     flex: 1;
-    width: 55%;
+    width: 50%;
   }
 
   .clock {
@@ -682,7 +703,9 @@ body:not(.theme-light) select option {
   .done-btn {
     width: 44px;
     height: 44px;
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 1;
   }
 
   /* Inputs más grandes */
@@ -706,6 +729,16 @@ body:not(.theme-light) select option {
   .day {
     font-size: 14px;
   }
+
+  /* Administración específica para iPad 2 Landscape */
+  .admin-mode .notes-list li {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .admin-mode .reminder .label {
+    font-size: 20px;
+  }
 }
 
 /* ===== Kiosko específico para iPad 2 ===== */
@@ -725,7 +758,8 @@ body:not(.theme-light) select option {
   }
 
   .kiosk .notes-list li {
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: 700;
     padding: 18px 20px;
     margin-bottom: 0px;
   }
@@ -751,7 +785,9 @@ body:not(.theme-light) select option {
   .kiosk .done-btn {
     width: 60px;
     height: 60px;
-    font-size: 28px;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
   }
 }
 
@@ -762,7 +798,7 @@ body:not(.theme-light) select option {
   }
 
   .kiosk #daypart {
-    font-size: 7vw;
+    font-size: 8vw;
   }
 
   .kiosk #date {
@@ -770,12 +806,13 @@ body:not(.theme-light) select option {
   }
 
   .kiosk .notes-list li {
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: 700;
     padding: 14px 16px;
   }
 
   .kiosk .reminder {
-    padding: 16px 14px;
+    padding: 0px 10px;
     min-height: 70px;
   }
 
@@ -794,7 +831,9 @@ body:not(.theme-light) select option {
   .kiosk .done-btn {
     width: 52px;
     height: 52px;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
   }
 }
 
@@ -828,6 +867,18 @@ body:not(.theme-light) select option {
 .done-btn {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
   min-height: 44px; /* Tamaño mínimo recomendado para iOS */
+}
+
+/* Mejorar el centrado de los iconos en botones */
+.done-btn {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
 }
 
 /* Mejorar visibilidad de inputs en iOS 9 */
