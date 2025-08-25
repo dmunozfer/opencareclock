@@ -19,7 +19,7 @@
       document.body.classList.remove(scaleClasses[i]);
     document.body.classList.add("scale-" + st.settings.scale);
 
-    // Selects
+    // Selects y títulos según modo
     var themeSel = document.getElementById("themeSel");
     if (themeSel)
       themeSel.value =
@@ -34,6 +34,16 @@
     if (hourSel) hourSel.value = String(st.settings.hourFormat);
     var secChk = document.getElementById("secChk");
     if (secChk) secChk.checked = !!st.settings.showSeconds;
+
+    // Títulos de tarjetas según modo
+    var notesTitle = document.querySelector("#notesCard .section-title");
+    if (notesTitle)
+      notesTitle.textContent = st.settings.kiosk ? "Notas de hoy" : "Notas";
+    var remTitle = document.querySelector("#remindersCard .section-title");
+    if (remTitle)
+      remTitle.textContent = st.settings.kiosk
+        ? "Recordatorios de hoy"
+        : "Recordatorios";
 
     // Entradas deshabilitadas en kiosko (solo lectura visual y funcional)
     var disableWhenKiosk = [
@@ -140,6 +150,12 @@
         st.settings.kiosk = false;
         window.CCState.save();
         applySettings();
+        // Re-render inmediato al salir de kiosko
+        if (window.CCNotes && window.CCNotes.renderToday)
+          window.CCNotes.renderToday();
+        if (window.CCReminders && window.CCReminders.renderToday)
+          window.CCReminders.renderToday();
+        if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
       }, 2000); // 2s pulsación larga
     }
     footer.onmousedown = start;
@@ -165,6 +181,13 @@
           st.settings.kiosk = false;
           window.CCState.save();
           applySettings();
+          // Re-render inmediato al salir de kiosko
+          if (window.CCNotes && window.CCNotes.renderToday)
+            window.CCNotes.renderToday();
+          if (window.CCReminders && window.CCReminders.renderToday)
+            window.CCReminders.renderToday();
+          if (window.CCLayout && window.CCLayout.update)
+            window.CCLayout.update();
         }
         taps = 0;
       }, 500);
@@ -173,6 +196,13 @@
 
   function bindUI() {
     var addNoteBtn = document.getElementById("addNote");
+    var selAllNotes = document.getElementById("selectAllNotesDays");
+    if (selAllNotes)
+      selAllNotes.onclick = function () {
+        if (window.CCState.state.settings.kiosk) return;
+        var boxes = document.getElementsByName("noteDay");
+        for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+      };
     if (addNoteBtn)
       addNoteBtn.onclick = function () {
         if (window.CCState.state.settings.kiosk) return;
@@ -190,6 +220,13 @@
       };
 
     var addRemBtn = document.getElementById("addReminder");
+    var selAllRem = document.getElementById("selectAllRemDays");
+    if (selAllRem)
+      selAllRem.onclick = function () {
+        if (window.CCState.state.settings.kiosk) return;
+        var boxes = document.getElementsByName("remDay");
+        for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+      };
     if (addRemBtn)
       addRemBtn.onclick = function () {
         if (window.CCState.state.settings.kiosk) return;

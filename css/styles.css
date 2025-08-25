@@ -233,6 +233,24 @@ body {
   }
 }
 
+/* Encabezados de sección */
+.section-header {
+  font-weight: 800;
+  opacity: 0.9;
+  padding: 6px 4px;
+}
+.section-header.collapsible {
+  cursor: pointer;
+}
+.section-header.collapsible:after {
+  content: "▼";
+  float: right;
+  opacity: 0.8;
+}
+.section-header.collapsible.collapsed:after {
+  content: "▲";
+}
+
 .reminder {
   display: flex; /* Fallback */
   align-items: center;
@@ -244,7 +262,7 @@ body {
 @supports (display: grid) {
   .reminder {
     display: grid;
-    grid-template-columns: 64px 140px 1fr auto; /* icono | hora | texto | acción */
+    grid-template-columns: 64px 120px 1fr auto; /* icono | hora | texto | acción */
   }
 }
 
@@ -273,7 +291,7 @@ body {
   text-align: center;
 }
 .reminder .time {
-  width: 140px;
+  width: 120px;
 }
 .reminder .label {
   font-size: 24px;
@@ -319,6 +337,31 @@ body {
 }
 .reminder.missed .done-btn {
   color: #d94343;
+}
+
+/* ===== Vista de administración para recordatorios ===== */
+.admin-reminders .reminder {
+  background: #2d74da !important; /* unificar a azul */
+}
+.admin-reminders .reminder .icon-wrap {
+  display: none; /* ocultar icono */
+}
+@supports (display: grid) {
+  .admin-reminders .reminder {
+    grid-template-columns: 140px 1fr auto; /* hora | texto | badges */
+  }
+}
+
+/* Badge atenuado para días no activos */
+.day-badge.muted {
+  opacity: 0.4;
+}
+
+/* Contenedor de acción (kiosko) */
+.action-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 /* ===== Footer fijo, pequeño ===== */

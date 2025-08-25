@@ -62,19 +62,18 @@
         textEl.className = "note-text";
         textEl.textContent = n.text;
         li.appendChild(textEl);
-        // En administración mostrar badges de días
+        // En administración mostrar badges de todos los días, inactivos atenuados
         if (!st.settings.kiosk) {
           var daysEl = document.createElement("div");
           daysEl.className = "days-badges";
           var allDays = ["L", "M", "X", "J", "V", "S", "D"];
           var dayIdx = [1, 2, 3, 4, 5, 6, 0];
           for (var d = 0; d < dayIdx.length; d++) {
-            if (n.days && n.days.indexOf(dayIdx[d]) >= 0) {
-              var b = document.createElement("span");
-              b.className = "day-badge";
-              b.textContent = allDays[d];
-              daysEl.appendChild(b);
-            }
+            var b = document.createElement("span");
+            var active = n.days && n.days.indexOf(dayIdx[d]) >= 0;
+            b.className = active ? "day-badge" : "day-badge muted";
+            b.textContent = allDays[d];
+            daysEl.appendChild(b);
           }
           li.appendChild(daysEl);
         }
@@ -88,6 +87,12 @@
         }
         list.appendChild(li);
       }
+    }
+    // En kiosko: ocultar tarjeta si no hay notas de hoy
+    var notesCard = document.getElementById("notesCard");
+    if (notesCard) {
+      if (st.settings.kiosk && !any) notesCard.style.display = "none";
+      else notesCard.style.display = "";
     }
     if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
   }
