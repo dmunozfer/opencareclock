@@ -34,6 +34,19 @@
     if (hourSel) hourSel.value = String(st.settings.hourFormat);
     var secChk = document.getElementById("secChk");
     if (secChk) secChk.checked = !!st.settings.showSeconds;
+
+    // Entradas deshabilitadas en kiosko (solo lectura visual y funcional)
+    var disableWhenKiosk = [
+      "noteInput",
+      "addNote",
+      "remTime",
+      "remLabel",
+      "addReminder",
+    ];
+    for (var i = 0; i < disableWhenKiosk.length; i++) {
+      var el = document.getElementById(disableWhenKiosk[i]);
+      if (el) el.disabled = !!st.settings.kiosk;
+    }
   }
 
   function updateLayoutNoNotes() {
@@ -162,6 +175,7 @@
     var addNoteBtn = document.getElementById("addNote");
     if (addNoteBtn)
       addNoteBtn.onclick = function () {
+        if (window.CCState.state.settings.kiosk) return;
         var text = document.getElementById("noteInput").value;
         document.getElementById("noteInput").value = "";
         var days = window.CCNotes.getSelectedDays();
@@ -178,6 +192,7 @@
     var addRemBtn = document.getElementById("addReminder");
     if (addRemBtn)
       addRemBtn.onclick = function () {
+        if (window.CCState.state.settings.kiosk) return;
         var t = document.getElementById("remTime").value;
         var l = document.getElementById("remLabel").value;
         document.getElementById("remTime").value = "";

@@ -9,6 +9,14 @@
   }
 
   function addNote(text, days) {
+    // Bloquear en modo kiosko
+    if (
+      window.CCState &&
+      window.CCState.state &&
+      window.CCState.state.settings &&
+      window.CCState.state.settings.kiosk
+    )
+      return;
     if (!text) return;
     var st = window.CCState.state;
     if (!days || !days.length) days = [new Date().getDay()]; // por defecto solo hoy
@@ -18,6 +26,14 @@
   }
 
   function delNote(id) {
+    // Bloquear en modo kiosko
+    if (
+      window.CCState &&
+      window.CCState.state &&
+      window.CCState.state.settings &&
+      window.CCState.state.settings.kiosk
+    )
+      return;
     var st = window.CCState.state;
     for (var i = 0; i < st.notes.length; i++) {
       if (st.notes[i].id === id) {
@@ -42,12 +58,14 @@
         any = true;
         var li = document.createElement("li");
         li.textContent = n.text;
-        // Botón eliminar pequeño (no intrusivo)
-        li.onclick = (function (id) {
-          return function () {
-            if (confirm("¿Eliminar nota?")) delNote(id);
-          };
-        })(n.id);
+        // Botón eliminar con clic: deshabilitar en kiosko
+        if (!st.settings.kiosk) {
+          li.onclick = (function (id) {
+            return function () {
+              if (confirm("¿Eliminar nota?")) delNote(id);
+            };
+          })(n.id);
+        }
         list.appendChild(li);
       }
     }

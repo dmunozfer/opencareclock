@@ -13,6 +13,14 @@
   }
 
   function addReminder(time, label, days) {
+    // Bloquear en modo kiosko
+    if (
+      window.CCState &&
+      window.CCState.state &&
+      window.CCState.state.settings &&
+      window.CCState.state.settings.kiosk
+    )
+      return;
     if (!time || !label) return;
     var st = window.CCState.state;
     st.reminders.push({
@@ -26,6 +34,14 @@
   }
 
   function delReminder(id) {
+    // Bloquear en modo kiosko
+    if (
+      window.CCState &&
+      window.CCState.state &&
+      window.CCState.state.settings &&
+      window.CCState.state.settings.kiosk
+    )
+      return;
     var st = window.CCState.state;
     for (var i = 0; i < st.reminders.length; i++) {
       if (st.reminders[i].id === id) {
@@ -136,26 +152,28 @@
       li.appendChild(l);
       li.appendChild(btn);
 
-      // Click largo en la tarjeta para eliminar (opcional)
-      (function (id, el) {
-        var timer;
-        el.onmousedown = function () {
-          timer = setTimeout(function () {
-            if (confirm("¿Eliminar recordatorio?")) delReminder(id);
-          }, 1200);
-        };
-        el.onmouseup = el.onmouseleave = function () {
-          clearTimeout(timer);
-        };
-        el.ontouchstart = function () {
-          timer = setTimeout(function () {
-            if (confirm("¿Eliminar recordatorio?")) delReminder(id);
-          }, 1200);
-        };
-        el.ontouchend = el.ontouchcancel = function () {
-          clearTimeout(timer);
-        };
-      })(r.id, li);
+      // Click largo para eliminar: deshabilitar en kiosko
+      if (!st.settings.kiosk) {
+        (function (id, el) {
+          var timer;
+          el.onmousedown = function () {
+            timer = setTimeout(function () {
+              if (confirm("¿Eliminar recordatorio?")) delReminder(id);
+            }, 1200);
+          };
+          el.onmouseup = el.onmouseleave = function () {
+            clearTimeout(timer);
+          };
+          el.ontouchstart = function () {
+            timer = setTimeout(function () {
+              if (confirm("¿Eliminar recordatorio?")) delReminder(id);
+            }, 1200);
+          };
+          el.ontouchend = el.ontouchcancel = function () {
+            clearTimeout(timer);
+          };
+        })(r.id, li);
+      }
 
       ul.appendChild(li);
     }
