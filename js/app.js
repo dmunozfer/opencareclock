@@ -45,6 +45,16 @@
         ? "Recordatorios de hoy"
         : "Recordatorios";
 
+    // Footer: ocultar hint y puntos si no estamos en kiosko
+    var footerHint = document.getElementById("footerHint");
+    var footer = document.getElementById("footer");
+    if (footerHint) footerHint.style.display = st.settings.kiosk ? "" : "none";
+    if (footer) footer.title = st.settings.kiosk ? footer.title : "";
+    var dots = footer ? footer.querySelectorAll(".dot") : [];
+    for (var di = 0; di < dots.length; di++) {
+      dots[di].style.display = st.settings.kiosk ? "" : "none";
+    }
+
     // Entradas deshabilitadas en kiosko (solo lectura visual y funcional)
     var disableWhenKiosk = [
       "noteInput",
@@ -197,12 +207,18 @@
   function bindUI() {
     var addNoteBtn = document.getElementById("addNote");
     var selAllNotes = document.getElementById("selectAllNotesDays");
-    if (selAllNotes)
+    if (selAllNotes) {
       selAllNotes.onclick = function () {
         if (window.CCState.state.settings.kiosk) return;
         var boxes = document.getElementsByName("noteDay");
-        for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+        var allChecked = true;
+        for (var i = 0; i < boxes.length; i++)
+          if (!boxes[i].checked) allChecked = false;
+        var newVal = allChecked ? false : true; // si todos marcados -> ninguno; si no -> todos
+        for (var j = 0; j < boxes.length; j++) boxes[j].checked = newVal;
+        updateSelectAllButtons();
       };
+    }
     if (addNoteBtn)
       addNoteBtn.onclick = function () {
         if (window.CCState.state.settings.kiosk) return;
@@ -221,12 +237,50 @@
 
     var addRemBtn = document.getElementById("addReminder");
     var selAllRem = document.getElementById("selectAllRemDays");
-    if (selAllRem)
+    if (selAllRem) {
       selAllRem.onclick = function () {
         if (window.CCState.state.settings.kiosk) return;
         var boxes = document.getElementsByName("remDay");
-        for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+        var allChecked = true;
+        for (var i = 0; i < boxes.length; i++)
+          if (!boxes[i].checked) allChecked = false;
+        var newVal = allChecked ? false : true;
+        for (var j = 0; j < boxes.length; j++) boxes[j].checked = newVal;
+        updateSelectAllButtons();
       };
+    }
+
+    // Mantener texto del botón Todos/Ninguno actualizado según selección
+    function updateSelectAllButtons() {
+      var selAllNotesBtn = document.getElementById("selectAllNotesDays");
+      var noteBoxes = document.getElementsByName("noteDay");
+      if (selAllNotesBtn && noteBoxes && noteBoxes.length) {
+        var allCheckedN = true;
+        for (var i = 0; i < noteBoxes.length; i++)
+          if (!noteBoxes[i].checked) allCheckedN = false;
+        selAllNotesBtn.textContent = allCheckedN ? "Ninguno" : "Todos";
+      }
+      var selAllRemBtn = document.getElementById("selectAllRemDays");
+      var remBoxes = document.getElementsByName("remDay");
+      if (selAllRemBtn && remBoxes && remBoxes.length) {
+        var allCheckedR = true;
+        for (var j = 0; j < remBoxes.length; j++)
+          if (!remBoxes[j].checked) allCheckedR = false;
+        selAllRemBtn.textContent = allCheckedR ? "Ninguno" : "Todos";
+      }
+    }
+
+    // Escuchar cambios individuales de checkbox para refrescar botones
+    var wireChange = function (name) {
+      var boxes = document.getElementsByName(name);
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].onchange = updateSelectAllButtons;
+      }
+    };
+    wireChange("noteDay");
+    wireChange("remDay");
+    // Inicializar labels de botones
+    updateSelectAllButtons();
     if (addRemBtn)
       addRemBtn.onclick = function () {
         if (window.CCState.state.settings.kiosk) return;

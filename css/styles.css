@@ -436,6 +436,19 @@ body {
   border-color: #00ff2a;
 }
 
+/* Selects: mejorar visibilidad en oscuro */
+body:not(.theme-light) .select,
+body:not(.theme-light) select.select,
+body:not(.theme-light) .input,
+body:not(.theme-light) .time {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+body:not(.theme-light) select option {
+  background-color: #111;
+  color: #fff;
+}
+
 /* ===== Modo kiosko ===== */
 .kiosk .toolbar {
   display: none;
@@ -469,6 +482,60 @@ body {
   }
   .kiosk .reminder .label {
     font-size: 18px;
+  }
+}
+
+/* Ajuste kiosko para iPad en horizontal (ancho intermedio) */
+@media (orientation: landscape) and (min-width: 768px) and (max-width: 1080px) {
+  .kiosk .reminders-today {
+    gap: 12px;
+  }
+  .kiosk .reminder {
+    grid-template-columns: 56px 110px 1fr 56px;
+    padding: 12px 10px;
+  }
+  .kiosk .reminder .time {
+    width: 110px;
+    font-size: 26px;
+    text-align: left;
+    padding-left: 6px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+  }
+  .kiosk .reminder .label {
+    font-size: 20px;
+  }
+  /* Notas con mismo tamaño que recordatorios en iPad horizontal */
+  .kiosk .notes-list li {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .kiosk .done-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+}
+
+/* Refuerzo general en kiosko: la hora nunca debe mostrar borde ni fondo */
+.kiosk .reminder .time {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+}
+
+/* Notas en kiosko: igualar tipografía de recordatorios (por defecto) */
+.kiosk .notes-list li {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* En móviles muy pequeños ya había tamaño menor para recordatorios; igualamos notas */
+@media (max-width: 600px) {
+  .kiosk .notes-list li {
+    font-size: 18px;
+    font-weight: 700;
   }
 }
 
