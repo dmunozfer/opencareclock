@@ -233,7 +233,7 @@
         var btn = document.createElement("button");
         btn.className = "done-btn";
         btn.title = "Marcar como hecho";
-        btn.textContent = isCompleted(r.id) ? "✓" : "✓";
+        btn.textContent = "";
         btn.onclick = (function (id) {
           return function (e) {
             if (e && e.stopPropagation) e.stopPropagation();
@@ -308,7 +308,7 @@
         var btn2 = document.createElement("button");
         btn2.className = "done-btn";
         btn2.title = "Marcar como hecho";
-        btn2.textContent = "✓";
+        btn2.textContent = "";
         btn2.onclick = (function (id) {
           return function (e) {
             if (e && e.stopPropagation) e.stopPropagation();

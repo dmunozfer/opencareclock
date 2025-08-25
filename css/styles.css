@@ -258,16 +258,35 @@ body {
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  font-size: 24px;
-  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
   flex-shrink: 0;
-  line-height: 1;
-  text-align: center;
   color: #000;
+  position: relative;
+  /* Asegurar centrado perfecto */
+  text-align: center;
+  line-height: 1;
+}
+
+/* SVG checkmark personalizado */
+.done-btn::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Centrado absoluto */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  /* Asegurar que no haya desplazamiento */
+  display: block;
 }
 
 /* ===== Estados con colores accesibles ===== */
@@ -579,9 +598,15 @@ body:not(.theme-light) select option {
   .done-btn {
     width: 52px;
     height: 52px;
-    font-size: 28px;
-    font-weight: 900;
-    line-height: 1;
+  }
+
+  .done-btn::before {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* Inputs más grandes */
@@ -703,9 +728,15 @@ body:not(.theme-light) select option {
   .done-btn {
     width: 44px;
     height: 44px;
-    font-size: 24px;
-    font-weight: 900;
-    line-height: 1;
+  }
+
+  .done-btn::before {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* Inputs más grandes */
@@ -785,9 +816,15 @@ body:not(.theme-light) select option {
   .kiosk .done-btn {
     width: 60px;
     height: 60px;
-    font-size: 32px;
-    font-weight: 900;
-    line-height: 1;
+  }
+
+  .kiosk .done-btn::before {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -831,9 +868,15 @@ body:not(.theme-light) select option {
   .kiosk .done-btn {
     width: 52px;
     height: 52px;
-    font-size: 28px;
-    font-weight: 900;
-    line-height: 1;
+  }
+
+  .kiosk .done-btn::before {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -879,6 +922,13 @@ body:not(.theme-light) select option {
   justify-content: center;
   text-align: center;
   vertical-align: middle;
+}
+
+/* Fallback SVG para botones de check */
+.done-btn svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
 }
 
 /* Mejorar visibilidad de inputs en iOS 9 */
