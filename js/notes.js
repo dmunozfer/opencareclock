@@ -43,6 +43,7 @@
       li.appendChild(b);
       notesEl.appendChild(li);
     }
+    if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
   }
 
   window.CCNotes = { add: addNote, del: delNote, render: renderNotes };

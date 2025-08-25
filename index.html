@@ -61,80 +61,46 @@
         </label>
       </div>
 
-      <div class="grid">
-        <div class="card clock" aria-live="polite">
-          <div id="time" aria-label="Hora actual">00:00:00</div>
-          <div id="daypart" aria-label="Momento del día">MAÑANA</div>
-          <div id="date" aria-label="Fecha actual">
-            lunes, 1 de enero de 2025
-          </div>
-        </div>
+<!-- NUEVO layout -->
+<div class="container" id="layout">
+  <section class="clock-panel">
+    <div class="card clock" aria-live="polite">
+      <div id="time" aria-label="Hora actual">00:00:00</div>
+      <div id="daypart" aria-label="Momento del día">MAÑANA</div>
+      <div id="date" aria-label="Fecha actual">lunes, 1 de enero de 2025</div>
+    </div>
+  </section>
 
-        <div class="card" id="notesCard">
-          <h3 class="section-title">Notas</h3>
-          <div class="row">
-            <input
-              class="input"
-              id="noteInput"
-              placeholder="Escribe una nota..."
-              aria-label="Nueva nota"
-            />
-            <button class="btn" id="addNote">Añadir</button>
-          </div>
-          <ul class="notes-list" id="notes"></ul>
-        </div>
+  <section class="side-panel">
+    <div class="card" id="notesCard">
+      <h3 class="section-title">Notas</h3>
+      <div class="row">
+        <input class="input" id="noteInput" placeholder="Escribe una nota..." aria-label="Nueva nota">
+        <button class="btn" id="addNote">Añadir</button>
+      </div>
+      <ul class="notes-list" id="notes"></ul>
+    </div>
 
-        <div class="card" id="remindersCard">
-          <h3 class="section-title">Recordatorios por días</h3>
-          <div class="row">
-            <input
-              class="time"
-              id="remTime"
-              type="time"
-              aria-label="Hora"
-              placeholder="08:00"
-            />
-            <input
-              class="input"
-              id="remLabel"
-              placeholder="Descripción (p. ej., Pastillas)"
-              aria-label="Descripción"
-            />
-            <button class="btn" id="addReminder">Añadir</button>
-            <div class="days" aria-label="Días de la semana">
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="1" checked />
-                L</label
-              >
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="2" checked />
-                M</label
-              >
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="3" checked />
-                X</label
-              >
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="4" checked />
-                J</label
-              >
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="5" checked />
-                V</label
-              >
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="6" checked />
-                S</label
-              >
-              <label class="day"
-                ><input type="checkbox" name="remDay" value="0" checked />
-                D</label
-              >
-            </div>
-          </div>
-          <ul class="reminders-list" id="reminders"></ul>
+    <div class="card" id="remindersCard">
+      <h3 class="section-title">Recordatorios por días</h3>
+      <div class="row">
+        <input class="time" id="remTime" type="time" aria-label="Hora" placeholder="08:00">
+        <input class="input" id="remLabel" placeholder="Descripción (p. ej., Pastillas)" aria-label="Descripción">
+        <button class="btn" id="addReminder">Añadir</button>
+        <div class="days" aria-label="Días de la semana">
+          <label class="day"><input type="checkbox" name="remDay" value="1" checked> L</label>
+          <label class="day"><input type="checkbox" name="remDay" value="2" checked> M</label>
+          <label class="day"><input type="checkbox" name="remDay" value="3" checked> X</label>
+          <label class="day"><input type="checkbox" name="remDay" value="4" checked> J</label>
+          <label class="day"><input type="checkbox" name="remDay" value="5" checked> V</label>
+          <label class="day"><input type="checkbox" name="remDay" value="6" checked> S</label>
+          <label class="day"><input type="checkbox" name="remDay" value="0" checked> D</label>
         </div>
       </div>
+      <ul class="reminders-list" id="reminders"></ul>
+    </div>
+  </
+
 
       <div class="footer">
         Calendar Clock — sin conexión · Datos guardados en este dispositivo

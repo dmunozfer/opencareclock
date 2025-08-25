@@ -241,3 +241,39 @@ body {
     font-size: 38px;
   }
 }
+
+
+/* ===== Layout responsive por orientación ===== */
+.container {
+  display: grid;
+  gap: 16px;
+  height: calc(100vh - 80px); /* aprox., ajusta según tu toolbar/footer */
+  padding: 16px;
+}
+
+/* Landscape: 2 columnas (reloj | notas) */
+@media (orientation: landscape) {
+  .container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+  .clock-panel { grid-column: 1; }
+  .side-panel  { grid-column: 2; display: grid; gap: 16px; align-content: start; }
+}
+
+/* Portrait: 2 filas (reloj arriba | notas abajo) */
+@media (orientation: portrait) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .clock-panel { grid-row: 1; }
+  .side-panel  { grid-row: 2; display: grid; gap: 16px; align-content: start; }
+}
+
+/* Si no hay notas ni recordatorios → solo reloj a pantalla completa */
+.no-notes .container {
+  grid-template-columns: 1fr !important;
+  grid-template-rows: 1fr !important;
+}
+.no-notes .side-panel { display: none !importa

@@ -192,6 +192,14 @@
     }
   }
 
+  function updateLayoutNoNotes() {
+    var st = window.CCState.state;
+    var hasNotes = st.notes && st.notes.length > 0;
+    var hasRems = st.reminders && st.reminders.length > 0;
+    document.body.classList.toggle("no-notes", !(hasNotes || hasRems));
+  }
+  window.CCLayout = { update: updateLayoutNoNotes };
+
   function init() {
     window.CCState.load();
     applySettings();
@@ -199,6 +207,7 @@
     window.CCReminders.render();
     window.CCClock.start();
     window.CCReminders.start();
+    window.CCLayout.update();
     bind();
   }
 

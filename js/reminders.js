@@ -103,6 +103,8 @@
       li.appendChild(span);
       li.appendChild(del);
       remList.appendChild(li);
+
+      if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
     }
   }
 
