@@ -79,6 +79,11 @@
       }
     } else {
       // ADMINISTRACIÓN: mostrar todas las notas con badges de días
+      // En administración siempre mostrar la tarjeta, aunque no haya notas
+      var notesCard = document.getElementById("notesCard");
+      if (notesCard) {
+        notesCard.style.display = "";
+      }
       for (var i = 0; i < st.notes.length; i++) {
         var n = st.notes[i];
         var li = document.createElement("li");
