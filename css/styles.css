@@ -197,6 +197,28 @@ body {
   font-weight: 600;
 }
 
+/* Nota con layout para texto + badges */
+.notes-list li .note-text {
+  margin-bottom: 6px;
+}
+
+/* Badges de días (LMXJVSD) compartidos */
+.days-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.day-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.2);
+  color: currentColor;
+}
+
 /* ===== Lista de recordatorios (tabla con 4 columnas) ===== */
 .reminders-today {
   list-style: none;
@@ -222,7 +244,7 @@ body {
 @supports (display: grid) {
   .reminder {
     display: grid;
-    grid-template-columns: 64px 140px 1fr 64px; /* icono | hora | texto | botón */
+    grid-template-columns: 64px 140px 1fr auto; /* icono | hora | texto | acción */
   }
 }
 

@@ -135,28 +135,38 @@
       l.className = "label";
       l.textContent = r.label;
 
-      // Columna 4: botón ✓
-      var btn = document.createElement("button");
-      btn.className = "done-btn";
-      btn.title = "Marcar como hecho";
-      btn.textContent = isCompleted(r.id) ? "✓" : "✓";
-      // Solo permitir marcar como hecho en modo kiosko
+      // Columna 4: botón ✓ (solo en kiosko) o badges de días (administración)
       if (st.settings.kiosk) {
+        var btn = document.createElement("button");
+        btn.className = "done-btn";
+        btn.title = "Marcar como hecho";
+        btn.textContent = isCompleted(r.id) ? "✓" : "✓";
         btn.onclick = (function (id) {
           return function (e) {
             if (e && e.stopPropagation) e.stopPropagation();
             toggleComplete(id);
           };
         })(r.id);
+        li.appendChild(btn);
       } else {
-        btn.disabled = true;
+        var daysEl = document.createElement("div");
+        daysEl.className = "days-badges";
+        var allDays = ["L", "M", "X", "J", "V", "S", "D"];
+        var dayIdx = [1, 2, 3, 4, 5, 6, 0];
+        for (var d = 0; d < dayIdx.length; d++) {
+          if (r.days && r.days.indexOf(dayIdx[d]) >= 0) {
+            var b = document.createElement("span");
+            b.className = "day-badge";
+            b.textContent = allDays[d];
+            daysEl.appendChild(b);
+          }
+        }
+        li.appendChild(daysEl);
       }
-
       // Componer fila
       li.appendChild(iconWrap);
       li.appendChild(t);
       li.appendChild(l);
-      li.appendChild(btn);
 
       // Borrado unificado: click con confirmación (deshabilitado en kiosko)
       if (!st.settings.kiosk) {
