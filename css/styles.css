@@ -56,42 +56,78 @@ body {
 /* ===== Layout principal ===== */
 .container {
   flex: 1;
-  display: grid;
+  display: flex; /* Fallback iOS9 */
+  flex-direction: column;
   gap: 16px;
   padding: 16px;
 }
 
-/* Landscape: reloj izquierda, panel derecha */
+/* Landscape: reloj izquierda, panel derecha (fallback Flex) */
 @media (orientation: landscape) {
   .container {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
+    flex-direction: row;
   }
-  .clock-panel {
-    grid-column: 1;
+  .clock-panel,
+  .side-panel {
+    flex: 1 1 0;
   }
   .side-panel {
-    grid-column: 2;
-    display: grid;
+    display: flex;
     gap: 16px;
-    align-content: start;
+    align-content: flex-start;
+    flex-direction: column;
   }
 }
 
-/* Portrait: reloj arriba, panel abajo */
+/* Portrait: reloj arriba, panel abajo (fallback Flex) */
 @media (orientation: portrait) {
   .container {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-  }
-  .clock-panel {
-    grid-row: 1;
+    flex-direction: column;
   }
   .side-panel {
-    grid-row: 2;
-    display: grid;
+    display: flex;
     gap: 16px;
-    align-content: start;
+    align-content: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* Activar Grid sólo si está soportado */
+@supports (display: grid) {
+  .container {
+    display: grid;
+  }
+  /* Landscape con Grid */
+  @media (orientation: landscape) {
+    .container {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+    }
+    .clock-panel {
+      grid-column: 1;
+    }
+    .side-panel {
+      grid-column: 2;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+  }
+  /* Portrait con Grid */
+  @media (orientation: portrait) {
+    .container {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+    .clock-panel {
+      grid-row: 1;
+    }
+    .side-panel {
+      grid-row: 2;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
   }
 }
 
@@ -115,6 +151,12 @@ body {
   font-weight: 700;
   letter-spacing: 1px;
   font-variant-numeric: tabular-nums; /* ancho fijo por dígito */
+}
+@supports not (font-variant-numeric: tabular-nums) {
+  #time {
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    letter-spacing: 0;
+  }
 }
 #daypart {
   font-size: 40px;
@@ -160,18 +202,28 @@ body {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
-  display: grid;
-  gap: 10px;
+  display: block; /* Fallback */
+}
+@supports (display: grid) {
+  .reminders-today {
+    display: grid;
+    gap: 10px;
+  }
 }
 
 .reminder {
-  display: grid;
-  grid-template-columns: 64px 140px 1fr 64px; /* icono | hora | texto | botón */
+  display: flex; /* Fallback */
   align-items: center;
   border-radius: 14px;
   padding: 12px 10px;
   color: #fff;
   font-weight: 700;
+}
+@supports (display: grid) {
+  .reminder {
+    display: grid;
+    grid-template-columns: 64px 140px 1fr 64px; /* icono | hora | texto | botón */
+  }
 }
 
 /* Celdas */
@@ -179,6 +231,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.reminder .icon-wrap {
+  width: 64px;
 }
 .reminder .icon {
   width: 40px;
@@ -195,9 +250,15 @@ body {
   font-size: 28px;
   text-align: center;
 }
+.reminder .time {
+  width: 140px;
+}
 .reminder .label {
   font-size: 24px;
   padding: 0 8px;
+}
+.reminder .label {
+  flex: 1 1 auto;
 }
 
 .done-btn {
@@ -212,8 +273,11 @@ body {
   place-items: center;
   background: #fff;
 }
+.done-btn {
+  margin-left: 8px;
+}
 
-/* Estados con colores accesibles */
+/* ===== Estados con colores accesibles ===== */
 .reminder.future {
   background: #2d74da;
 }
@@ -237,6 +301,7 @@ body {
 
 /* ===== Footer fijo, pequeño ===== */
 .footer {
+  position: -webkit-sticky; /* iOS */
   position: sticky;
   bottom: 0;
   left: 0;
@@ -255,6 +320,14 @@ body {
 }
 .footer .dot {
   opacity: 0.5;
+}
+@supports not (position: sticky) {
+  .footer {
+    position: fixed;
+  }
+  body {
+    padding-bottom: 42px;
+  }
 }
 
 /* ===== Alert ===== */
