@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calendar Clock</title>
+    <!-- enlace al CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="wrap scale-140" id="root">
+      <div class="toolbar" role="toolbar" aria-label="Controles">
+        <button
+          class="btn"
+          id="btnKiosk"
+          title="Alternar modo kiosko (ocultar controles)"
+        >
+          Kiosko
+        </button>
+        <label>
+          Tema
+          <select class="select" id="themeSel" aria-label="Tema">
+            <option value="dark">Oscuro</option>
+            <option value="light">Claro</option>
+            <option value="contrast">Alto contraste</option>
+          </select>
+        </label>
+        <label>
+          Tamaño
+          <select class="select" id="scaleSel" aria-label="Tamaño de interfaz">
+            <option value="100">100%</option>
+            <option value="120">120%</option>
+            <option value="140" selected>140%</option>
+            <option value="160">160%</option>
+          </select>
+        </label>
+        <label>
+          Formato
+          <select class="select" id="hourSel" aria-label="Formato de hora">
+            <option value="24">24h</option>
+            <option value="12">12h</option>
+          </select>
+        </label>
+        <label> <input type="checkbox" id="secChk" /> Segundos </label>
+        <button class="btn" id="btnExport" title="Exportar configuración">
+          Exportar
+        </button>
+        <label
+          class="btn"
+          for="importFile"
+          title="Importar configuración"
+          style="display: inline-block"
+        >
+          Importar
+          <input
+            id="importFile"
+            type="file"
+            accept="application/json"
+            style="display: none"
+          />
+        </label>
+      </div>
+
+      <div class="grid">
+        <div class="card clock" aria-live="polite">
+          <div id="time" aria-label="Hora actual">00:00:00</div>
+          <div id="daypart" aria-label="Momento del día">MAÑANA</div>
+          <div id="date" aria-label="Fecha actual">
+            lunes, 1 de enero de 2025
+          </div>
+        </div>
+
+        <div class="card" id="notesCard">
+          <h3 class="section-title">Notas</h3>
+          <div class="row">
+            <input
+              class="input"
+              id="noteInput"
+              placeholder="Escribe una nota..."
+              aria-label="Nueva nota"
+            />
+            <button class="btn" id="addNote">Añadir</button>
+          </div>
+          <ul class="notes-list" id="notes"></ul>
+        </div>
+
+        <div class="card" id="remindersCard">
+          <h3 class="section-title">Recordatorios por días</h3>
+          <div class="row">
+            <input
+              class="time"
+              id="remTime"
+              type="time"
+              aria-label="Hora"
+              placeholder="08:00"
+            />
+            <input
+              class="input"
+              id="remLabel"
+              placeholder="Descripción (p. ej., Pastillas)"
+              aria-label="Descripción"
+            />
+            <button class="btn" id="addReminder">Añadir</button>
+            <div class="days" aria-label="Días de la semana">
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="1" checked />
+                L</label
+              >
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="2" checked />
+                M</label
+              >
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="3" checked />
+                X</label
+              >
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="4" checked />
+                J</label
+              >
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="5" checked />
+                V</label
+              >
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="6" checked />
+                S</label
+              >
+              <label class="day"
+                ><input type="checkbox" name="remDay" value="0" checked />
+                D</label
+              >
+            </div>
+          </div>
+          <ul class="reminders-list" id="reminders"></ul>
+        </div>
+      </div>
+
+      <div class="footer">
+        Calendar Clock — sin conexión · Datos guardados en este dispositivo
+      </div>
+    </div>
+
+    <div class="alert" id="alert" role="alert">Recordatorio</div>
+
+    <audio id="ding" preload="auto">
+      <source src="assets/ding.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- scripts -->
+    <script src="js/state.js"></script>
+    <script src="js/clock.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/reminders.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
