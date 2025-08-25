@@ -2,6 +2,7 @@
 html,
 body {
   height: 100%;
+  overflow: hidden; /* evitar scroll en pantalla completa */
 }
 body {
   margin: 0;
@@ -11,6 +12,13 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  /* Soporte para pantalla completa en iOS */
+  -webkit-overflow-scrolling: touch;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* Toolbar superior */
@@ -456,6 +464,26 @@ body:not(.theme-light) select option {
 .kiosk #notesCard .row,
 .kiosk #remindersCard .row {
   display: none; /* ocultar formularios en kiosko */
+}
+
+/* ===== Pantalla completa en kiosko ===== */
+.kiosk {
+  /* Forzar pantalla completa en iOS */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  /* Ocultar barras de navegación en iOS */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* ===== Modo administración ===== */

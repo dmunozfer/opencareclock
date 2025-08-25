@@ -386,6 +386,41 @@
     window.CCReminders.start();
     updateLayoutNoNotes();
     bindUI();
+
+    // Configurar pantalla completa para kiosko
+    setupFullscreen();
+  }
+
+  function setupFullscreen() {
+    // Prevenir gestos de navegación en kiosko
+    if (window.CCState.state.settings.kiosk) {
+      // Prevenir zoom con gestos
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+      });
+      document.addEventListener("gesturechange", function (e) {
+        e.preventDefault();
+      });
+      document.addEventListener("gestureend", function (e) {
+        e.preventDefault();
+      });
+
+      // Prevenir scroll y navegación
+      document.addEventListener(
+        "touchmove",
+        function (e) {
+          if (e.touches.length > 1) {
+            e.preventDefault(); // prevenir zoom con dos dedos
+          }
+        },
+        { passive: false }
+      );
+
+      // Prevenir menú contextual
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+    }
   }
 
   init();
