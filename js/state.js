@@ -40,8 +40,10 @@
   }
 
   function load() {
+    var hadRaw = false;
     try {
       var raw = localStorage.getItem(KEY);
+      hadRaw = !!raw;
       if (raw) {
         var obj = JSON.parse(raw);
         if (obj && obj.settings) api.state.settings = obj.settings;
@@ -57,6 +59,12 @@
     if (api.state.lastSeenDate !== tk) {
       api.state.completedByDate = {}; // limpiar completados de días anteriores
       api.state.lastSeenDate = tk;
+      save();
+    }
+
+    // Primera ejecución: asegurar modo configuración (no kiosko)
+    if (!hadRaw) {
+      api.state.settings.kiosk = false;
       save();
     }
   }

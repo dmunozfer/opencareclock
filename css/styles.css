@@ -131,11 +131,11 @@ body {
   }
 }
 
-/* Ocultar panel si hoy no hay contenido */
-.no-notes .side-panel {
+/* Ocultar panel si hoy no hay contenido (solo en kiosko) */
+.kiosk.no-notes .side-panel {
   display: none !important;
 }
-.no-notes .container {
+.kiosk.no-notes .container {
   grid-template-columns: 1fr !important;
   grid-template-rows: 1fr !important;
 }
@@ -345,6 +345,7 @@ body {
   display: none;
   font-size: 18px;
   font-weight: 700;
+  pointer-events: none; /* no bloquear clics detrás */
 }
 .alert.show {
   display: block;

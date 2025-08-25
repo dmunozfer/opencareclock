@@ -140,11 +140,17 @@
       btn.className = "done-btn";
       btn.title = "Marcar como hecho";
       btn.textContent = isCompleted(r.id) ? "✓" : "✓";
-      btn.onclick = (function (id) {
-        return function () {
-          toggleComplete(id);
-        };
-      })(r.id);
+      // Solo permitir marcar como hecho en modo kiosko
+      if (st.settings.kiosk) {
+        btn.onclick = (function (id) {
+          return function (e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            toggleComplete(id);
+          };
+        })(r.id);
+      } else {
+        btn.disabled = true;
+      }
 
       // Componer fila
       li.appendChild(iconWrap);
@@ -152,25 +158,11 @@
       li.appendChild(l);
       li.appendChild(btn);
 
-      // Click largo para eliminar: deshabilitar en kiosko
+      // Borrado unificado: click con confirmación (deshabilitado en kiosko)
       if (!st.settings.kiosk) {
         (function (id, el) {
-          var timer;
-          el.onmousedown = function () {
-            timer = setTimeout(function () {
-              if (confirm("¿Eliminar recordatorio?")) delReminder(id);
-            }, 1200);
-          };
-          el.onmouseup = el.onmouseleave = function () {
-            clearTimeout(timer);
-          };
-          el.ontouchstart = function () {
-            timer = setTimeout(function () {
-              if (confirm("¿Eliminar recordatorio?")) delReminder(id);
-            }, 1200);
-          };
-          el.ontouchend = el.ontouchcancel = function () {
-            clearTimeout(timer);
+          el.onclick = function () {
+            if (confirm("¿Eliminar recordatorio?")) delReminder(id);
           };
         })(r.id, li);
       }

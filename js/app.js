@@ -251,6 +251,11 @@
         st.settings.kiosk = !st.settings.kiosk;
         window.CCState.save();
         applySettings();
+        // Re-render para refrescar handlers (borrado habilitado/inhabilitado)
+        if (window.CCNotes && window.CCNotes.renderToday)
+          window.CCNotes.renderToday();
+        if (window.CCReminders && window.CCReminders.renderToday)
+          window.CCReminders.renderToday();
       };
 
     var btnExport = document.getElementById("btnExport");
