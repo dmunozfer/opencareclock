@@ -3,14 +3,18 @@
     var st = window.CCState.state;
     // Tema
     document.body.className = document.body.className.replace(
-      /(theme-light|theme-contrast|kiosk|no-notes)/g,
+      /(theme-light|theme-contrast|kiosk|admin-mode|no-notes)/g,
       ""
     );
     if (st.settings.theme === "light")
       document.body.classList.add("theme-light");
     else if (st.settings.theme === "contrast")
       document.body.classList.add("theme-contrast");
-    if (st.settings.kiosk) document.body.classList.add("kiosk");
+    if (st.settings.kiosk) {
+      document.body.classList.add("kiosk");
+    } else {
+      document.body.classList.add("admin-mode");
+    }
 
     // Escala
     var root = document.getElementById("root"); // puede no existir ya, aplicamos a body

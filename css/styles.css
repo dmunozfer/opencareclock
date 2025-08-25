@@ -458,6 +458,16 @@ body:not(.theme-light) select option {
   display: none; /* ocultar formularios en kiosko */
 }
 
+/* ===== Modo administración ===== */
+/* Ocultar reloj en administración para liberar espacio */
+.admin-mode .clock-panel {
+  display: none;
+}
+/* En administración, el panel lateral ocupa todo el ancho */
+.admin-mode .side-panel {
+  grid-column: 1 / -1 !important;
+}
+
 .kiosk .footer {
   opacity: 0.6;
 }
@@ -572,5 +582,74 @@ body:not(.theme-light) select option {
   }
   .reminder .label {
     font-size: 20px;
+  }
+}
+
+/* ===== Optimizaciones para iPad2 (1024x768, 132ppi) ===== */
+/* Horizontal (landscape) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  /* En administración, textos más grandes para iPad2 */
+  .admin-mode .section-title {
+    font-size: 22px;
+  }
+  .admin-mode .notes-list li {
+    font-size: 20px;
+    padding: 14px 16px;
+  }
+  .admin-mode .reminder .label {
+    font-size: 26px;
+  }
+  .admin-mode .reminder .time {
+    font-size: 30px;
+  }
+  .admin-mode .day-badge {
+    font-size: 14px;
+    padding: 4px 10px;
+  }
+  /* Inputs más grandes en administración */
+  .admin-mode .input,
+  .admin-mode .time,
+  .admin-mode .select {
+    font-size: 18px;
+    padding: 8px 10px;
+  }
+  /* Botones más grandes */
+  .admin-mode .btn {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+}
+
+/* Vertical (portrait) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  /* En administración, textos más grandes para iPad2 vertical */
+  .admin-mode .section-title {
+    font-size: 24px;
+  }
+  .admin-mode .notes-list li {
+    font-size: 22px;
+    padding: 16px 18px;
+  }
+  .admin-mode .reminder .label {
+    font-size: 28px;
+  }
+  .admin-mode .reminder .time {
+    font-size: 32px;
+  }
+  .admin-mode .day-badge {
+    font-size: 16px;
+    padding: 5px 12px;
+  }
+  /* Inputs más grandes en administración */
+  .admin-mode .input,
+  .admin-mode .time,
+  .admin-mode .select {
+    font-size: 20px;
+    padding: 10px 12px;
+  }
+  /* Botones más grandes */
+  .admin-mode .btn {
+    font-size: 18px;
+    padding: 10px 14px;
   }
 }
