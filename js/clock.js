@@ -26,7 +26,7 @@
     return (n < 10 ? "0" : "") + n;
   }
 
-  function getDayPart(h) {
+  function dayPart(h) {
     if (h < 6) return "MADRUGADA";
     if (h < 12) return "MAÑANA";
     if (h < 14) return "MEDIODÍA";
@@ -34,7 +34,7 @@
     return "NOCHE";
   }
 
-  function renderClock() {
+  function render() {
     var s = window.CCState.state.settings;
     var now = new Date();
     var h = now.getHours(),
@@ -47,7 +47,7 @@
       displayH = h % 12;
       if (displayH === 0) displayH = 12;
     }
-    var txt =
+    var timeTxt =
       pad2(displayH) +
       ":" +
       pad2(m) +
@@ -57,8 +57,8 @@
     var timeEl = document.getElementById("time");
     var daypartEl = document.getElementById("daypart");
     var dateEl = document.getElementById("date");
-    if (timeEl) timeEl.textContent = txt;
-    if (daypartEl) daypartEl.textContent = getDayPart(h);
+    if (timeEl) timeEl.textContent = timeTxt;
+    if (daypartEl) daypartEl.textContent = dayPart(h);
     if (dateEl) {
       var wd = WEEKDAYS[now.getDay()],
         d = now.getDate(),
@@ -68,10 +68,10 @@
     }
   }
 
-  function startClock() {
-    renderClock();
-    setInterval(renderClock, 1000);
+  function start() {
+    render();
+    setInterval(render, 1000);
   }
 
-  window.CCClock = { start: startClock };
+  window.CCClock = { start: start };
 })();

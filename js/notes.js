@@ -1,10 +1,20 @@
 (function () {
-  function addNote(text) {
+  function getSelectedDays() {
+    var boxes = document.getElementsByName("noteDay");
+    var out = [];
+    for (var i = 0; i < boxes.length; i++) {
+      if (boxes[i].checked) out.push(parseInt(boxes[i].value, 10));
+    }
+    return out;
+  }
+
+  function addNote(text, days) {
     if (!text) return;
     var st = window.CCState.state;
-    st.notes.push({ id: "n" + new Date().getTime(), text: text });
+    if (!days || !days.length) days = [new Date().getDay()]; // por defecto solo hoy
+    st.notes.push({ id: "n" + new Date().getTime(), text: text, days: days });
     window.CCState.save();
-    renderNotes();
+    renderToday();
   }
 
   function delNote(id) {
@@ -16,35 +26,38 @@
       }
     }
     window.CCState.save();
-    renderNotes();
+    renderToday();
   }
 
-  function renderNotes() {
+  function renderToday() {
     var st = window.CCState.state;
-    var notesEl = document.getElementById("notes");
-    if (!notesEl) return;
-    notesEl.innerHTML = "";
+    var dow = new Date().getDay();
+    var list = document.getElementById("notes");
+    if (!list) return;
+    list.innerHTML = "";
+    var any = false;
     for (var i = 0; i < st.notes.length; i++) {
       var n = st.notes[i];
-      var li = document.createElement("li");
-      li.className = "pill";
-      var span = document.createElement("span");
-      span.textContent = n.text;
-      var b = document.createElement("button");
-      b.className = "del";
-      b.title = "Eliminar";
-      b.textContent = "×";
-      b.onclick = (function (id) {
-        return function () {
-          delNote(id);
-        };
-      })(n.id);
-      li.appendChild(span);
-      li.appendChild(b);
-      notesEl.appendChild(li);
+      if (n.days && n.days.indexOf(dow) >= 0) {
+        any = true;
+        var li = document.createElement("li");
+        li.textContent = n.text;
+        // Botón eliminar pequeño (no intrusivo)
+        li.onclick = (function (id) {
+          return function () {
+            if (confirm("¿Eliminar nota?")) delNote(id);
+          };
+        })(n.id);
+        list.appendChild(li);
+      }
     }
     if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
   }
 
-  window.CCNotes = { add: addNote, del: delNote, render: renderNotes };
+  window.CCNotes = {
+    add: addNote,
+    del: delNote,
+    renderToday: renderToday,
+    getSelectedDays: getSelectedDays,
+  };
 })();

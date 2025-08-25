@@ -1,4 +1,4 @@
-/* ====== Base styles (compatible con iOS antiguos) ====== */
+/* ===== Base ===== */
 html,
 body {
   height: 100%;
@@ -8,12 +8,12 @@ body {
   font-family: -apple-system, Arial, Helvetica, sans-serif;
   background: #000;
   color: #fff;
-}
-.wrap {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
+
+/* Toolbar superior */
 .toolbar {
   background: rgba(255, 255, 255, 0.06);
   padding: 8px 10px;
@@ -23,8 +23,15 @@ body {
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.toolbar > * {
-  margin-right: 8px;
+
+.select,
+.input,
+.time {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: inherit;
 }
 .btn {
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -37,21 +44,7 @@ body {
 .btn:active {
   transform: scale(0.98);
 }
-.select,
-.input,
-.time {
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: transparent;
-  color: inherit;
-}
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  padding: 16px;
-}
+
 .card {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -59,6 +52,59 @@ body {
   padding: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
+
+/* ===== Layout principal ===== */
+.container {
+  flex: 1;
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+/* Landscape: reloj izquierda, panel derecha */
+@media (orientation: landscape) {
+  .container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+  .clock-panel {
+    grid-column: 1;
+  }
+  .side-panel {
+    grid-column: 2;
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+}
+
+/* Portrait: reloj arriba, panel abajo */
+@media (orientation: portrait) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .clock-panel {
+    grid-row: 1;
+  }
+  .side-panel {
+    grid-row: 2;
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+}
+
+/* Ocultar panel si hoy no hay contenido */
+.no-notes .side-panel {
+  display: none !important;
+}
+.no-notes .container {
+  grid-template-columns: 1fr !important;
+  grid-template-rows: 1fr !important;
+}
+
+/* ===== Reloj ===== */
 .clock {
   text-align: center;
   padding: 12px 8px 20px;
@@ -79,6 +125,7 @@ body {
   margin-top: 10px;
   opacity: 0.9;
 }
+
 .section-title {
   font-size: 18px;
   font-weight: 700;
@@ -89,65 +136,147 @@ body {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: center;
 }
-.notes-list,
-.reminders-list {
+
+.notes-list {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
 }
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 10px 12px;
-  border-radius: 999px;
-  margin: 6px 6px 0 0;
+.notes-list li {
+  background: #b59f00;
+  color: #1f1a00;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 8px 0;
   font-size: 18px;
-}
-.pill .del {
-  border: 0;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-  border-radius: 999px;
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  cursor: pointer;
-}
-.footer {
-  margin-top: auto;
-  padding: 10px 14px;
-  font-size: 12px;
-  opacity: 0.7;
-  text-align: center;
+  font-weight: 600;
 }
 
-/* controles de días */
-.days {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-top: 8px;
-  flex-wrap: wrap;
+/* ===== Lista de recordatorios (tabla con 4 columnas) ===== */
+.reminders-today {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
 }
-.day {
-  display: inline-flex;
+
+.reminder {
+  display: grid;
+  grid-template-columns: 64px 140px 1fr 64px; /* icono | hora | texto | botón */
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
+  border-radius: 14px;
+  padding: 12px 10px;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Celdas */
+.reminder .icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reminder .icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25); /* círculo de contraste siempre visible */
+  color: #fff;
+}
+.reminder .time {
+  font-size: 28px;
+  text-align: center;
+}
+.reminder .label {
+  font-size: 24px;
+  padding: 0 8px;
+}
+
+.done-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  background: #fff;
+}
+
+/* Estados con colores accesibles */
+.reminder.future {
+  background: #2d74da;
+}
+.reminder.future .done-btn {
+  color: #2d74da;
+}
+
+.reminder.completed {
+  background: #2c9a47;
+}
+.reminder.completed .done-btn {
+  color: #2c9a47;
+}
+
+.reminder.missed {
+  background: #d94343;
+}
+.reminder.missed .done-btn {
+  color: #d94343;
+}
+
+/* ===== Footer fijo, pequeño ===== */
+.footer {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   user-select: none;
   -webkit-user-select: none;
 }
-.day input {
-  margin: 0;
+.footer .dot {
+  opacity: 0.5;
 }
 
-/* temas */
+/* ===== Alert ===== */
+.alert {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 64px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #ffd400;
+  color: #1f1a00;
+  border: 1px solid #d7b100;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  display: none;
+  font-size: 18px;
+  font-weight: 700;
+}
+.alert.show {
+  display: block;
+}
+
+/* ===== Temas ===== */
 .theme-light {
   background: #f6f7fb;
   color: #191b1f;
@@ -167,15 +296,12 @@ body {
   border-color: #00ff2a;
 }
 
-/* Kiosk: oculta solo la barra y maximiza tamaños */
-.kiosk .toolbar,
-.kiosk .footer {
+/* ===== Modo kiosko ===== */
+.kiosk .toolbar {
   display: none;
 }
-.kiosk .grid {
-  grid-template-columns: 1fr;
-  gap: 28px;
-  padding: 24px;
+.kiosk .footer {
+  opacity: 0.6;
 }
 .kiosk #time {
   font-size: 18vw;
@@ -186,34 +312,8 @@ body {
 .kiosk #date {
   font-size: 6vw;
 }
-.kiosk .pill {
-  font-size: 3.8vw;
-  padding: 12px 16px;
-}
-.kiosk .row {
-  display: none;
-}
 
-/* Banner recordatorio */
-.alert {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: #ffd400;
-  color: #1f1a00;
-  border: 1px solid #d7b100;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-  display: none;
-  font-size: 20px;
-}
-.alert.show {
-  display: block;
-}
-
-/* Accesibilidad tamaño general */
+/* ===== Escalas ===== */
 .scale-100 {
   font-size: 100%;
 }
@@ -227,53 +327,15 @@ body {
   font-size: 160%;
 }
 
-@media (min-width: 800px) {
-  .grid {
-    grid-template-columns: 1fr 1fr;
+/* Ajustes responsivos adicionales */
+@media (max-width: 800px) {
+  .reminder {
+    grid-template-columns: 56px 120px 1fr 56px;
   }
-  .clock #time {
-    font-size: 120px;
+  .reminder .time {
+    font-size: 24px;
   }
-  #daypart {
-    font-size: 44px;
-  }
-  #date {
-    font-size: 38px;
+  .reminder .label {
+    font-size: 20px;
   }
 }
-
-
-/* ===== Layout responsive por orientación ===== */
-.container {
-  display: grid;
-  gap: 16px;
-  height: calc(100vh - 80px); /* aprox., ajusta según tu toolbar/footer */
-  padding: 16px;
-}
-
-/* Landscape: 2 columnas (reloj | notas) */
-@media (orientation: landscape) {
-  .container {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
-  }
-  .clock-panel { grid-column: 1; }
-  .side-panel  { grid-column: 2; display: grid; gap: 16px; align-content: start; }
-}
-
-/* Portrait: 2 filas (reloj arriba | notas abajo) */
-@media (orientation: portrait) {
-  .container {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-  }
-  .clock-panel { grid-row: 1; }
-  .side-panel  { grid-row: 2; display: grid; gap: 16px; align-content: start; }
-}
-
-/* Si no hay notas ni recordatorios → solo reloj a pantalla completa */
-.no-notes .container {
-  grid-template-columns: 1fr !important;
-  grid-template-rows: 1fr !important;
-}
-.no-notes .side-panel { display: none !importa

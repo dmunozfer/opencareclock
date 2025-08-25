@@ -1,25 +1,25 @@
 (function () {
   function applySettings() {
     var st = window.CCState.state;
-    // tema
+    // Tema
     document.body.className = document.body.className.replace(
-      /(theme-light|theme-contrast|kiosk)/g,
+      /(theme-light|theme-contrast|kiosk|no-notes)/g,
       ""
     );
-    if (st.settings.theme === "light") {
+    if (st.settings.theme === "light")
       document.body.classList.add("theme-light");
-    } else if (st.settings.theme === "contrast") {
+    else if (st.settings.theme === "contrast")
       document.body.classList.add("theme-contrast");
-    }
+    if (st.settings.kiosk) document.body.classList.add("kiosk");
 
-    // scale
-    var root = document.getElementById("root");
-    if (root) {
-      root.className = root.className.replace(/scale-\d{3}/g, "");
-      root.classList.add("scale-" + st.settings.scale);
-    }
+    // Escala
+    var root = document.getElementById("root"); // puede no existir ya, aplicamos a body
+    var scaleClasses = ["scale-100", "scale-120", "scale-140", "scale-160"];
+    for (var i = 0; i < scaleClasses.length; i++)
+      document.body.classList.remove(scaleClasses[i]);
+    document.body.classList.add("scale-" + st.settings.scale);
 
-    // selects
+    // Selects
     var themeSel = document.getElementById("themeSel");
     if (themeSel)
       themeSel.value =
@@ -34,28 +34,49 @@
     if (hourSel) hourSel.value = String(st.settings.hourFormat);
     var secChk = document.getElementById("secChk");
     if (secChk) secChk.checked = !!st.settings.showSeconds;
-
-    // kiosk
-    if (st.settings.kiosk) {
-      document.body.classList.add("kiosk");
-    } else {
-      document.body.classList.remove("kiosk");
-    }
   }
+
+  function updateLayoutNoNotes() {
+    var st = window.CCState.state;
+    var dow = new Date().getDay();
+    var hasNotes = false,
+      hasRems = false;
+
+    // ¿Notas de hoy?
+    for (var i = 0; i < st.notes.length; i++) {
+      if (st.notes[i].days && st.notes[i].days.indexOf(dow) >= 0) {
+        hasNotes = true;
+        break;
+      }
+    }
+    // ¿Recordatorios de hoy?
+    for (var j = 0; j < st.reminders.length; j++) {
+      if (st.reminders[j].days && st.reminders[j].days.indexOf(dow) >= 0) {
+        hasRems = true;
+        break;
+      }
+    }
+
+    var noNotes = !(hasNotes || hasRems);
+    if (noNotes) document.body.classList.add("no-notes");
+    else document.body.classList.remove("no-notes");
+  }
+  window.CCLayout = { update: updateLayoutNoNotes };
 
   function exportData() {
     var data = JSON.stringify(window.CCState.state, null, 2);
-    var blob = new Blob([data], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
+    var url = URL.createObjectURL(
+      new Blob([data], { type: "application/json" })
+    );
     var a = document.createElement("a");
     a.href = url;
-    a.download = "calendar-clock-config.json";
+    a.download = "opencareclock-config.json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     setTimeout(function () {
       URL.revokeObjectURL(url);
-    }, 1000);
+    }, 500);
   }
 
   function importData(file) {
@@ -63,33 +84,94 @@
     reader.onload = function () {
       try {
         var obj = JSON.parse(reader.result);
-        if (obj.settings) window.CCState.state.settings = obj.settings;
-        if (obj.notes) window.CCState.state.notes = obj.notes;
-        if (obj.reminders) window.CCState.state.reminders = obj.reminders;
+        var st = window.CCState.state;
+        if (obj.settings) st.settings = obj.settings;
+        if (obj.notes) st.notes = obj.notes;
+        if (obj.reminders) st.reminders = obj.reminders;
+        if (obj.completedByDate) st.completedByDate = obj.completedByDate;
         window.CCState.save();
         applySettings();
-        window.CCNotes.render();
-        window.CCReminders.render();
+        window.CCNotes.renderToday();
+        window.CCReminders.renderToday();
+        updateLayoutNoNotes();
       } catch (e) {}
     };
     reader.readAsText(file);
   }
 
-  function bind() {
+  // Kiosko: salida con pulsación larga en el footer (+ PIN opcional)
+  function bindFooterKioskExit() {
+    var footer = document.getElementById("footer");
+    if (!footer) return;
+    var timer;
+    function clear() {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    }
+    function start() {
+      timer = setTimeout(function () {
+        var st = window.CCState.state;
+        // Si hay PIN activado, pedirlo
+        if (st.settings.kioskPinEnabled && st.settings.kioskPin) {
+          var pin = window.prompt(
+            "Introduce PIN para salir del modo kiosko:",
+            ""
+          );
+          if (pin !== st.settings.kioskPin) {
+            clear();
+            return;
+          }
+        }
+        st.settings.kiosk = false;
+        window.CCState.save();
+        applySettings();
+      }, 2000); // 2s pulsación larga
+    }
+    footer.onmousedown = start;
+    footer.onmouseup = clear;
+    footer.onmouseleave = clear;
+    footer.ontouchstart = start;
+    footer.ontouchend = clear;
+    footer.ontouchcancel = clear;
+  }
+
+  // Plan B: triple toque en la hora
+  function bindTripleTapOnTime() {
+    var timeEl = document.getElementById("time");
+    if (!timeEl) return;
+    var taps = 0,
+      tapTimer;
+    timeEl.onclick = function () {
+      taps++;
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(function () {
+        if (taps >= 3) {
+          var st = window.CCState.state;
+          st.settings.kiosk = false;
+          window.CCState.save();
+          applySettings();
+        }
+        taps = 0;
+      }, 500);
+    };
+  }
+
+  function bindUI() {
     var addNoteBtn = document.getElementById("addNote");
     if (addNoteBtn)
       addNoteBtn.onclick = function () {
-        var v = document.getElementById("noteInput").value;
+        var text = document.getElementById("noteInput").value;
         document.getElementById("noteInput").value = "";
-        window.CCNotes.add(v);
+        var days = window.CCNotes.getSelectedDays();
+        window.CCNotes.add(text, days);
       };
     var noteInput = document.getElementById("noteInput");
     if (noteInput)
       noteInput.onkeypress = function (e) {
         if (e.keyCode === 13) {
-          var v = noteInput.value;
-          noteInput.value = "";
-          window.CCNotes.add(v);
+          addNoteBtn.click();
         }
       };
 
@@ -98,21 +180,16 @@
       addRemBtn.onclick = function () {
         var t = document.getElementById("remTime").value;
         var l = document.getElementById("remLabel").value;
-        var d = window.CCReminders.getSelectedDays();
         document.getElementById("remTime").value = "";
         document.getElementById("remLabel").value = "";
-        window.CCReminders.add(t, l, d);
+        var days = window.CCReminders.getSelectedDays();
+        window.CCReminders.add(t, l, days);
       };
     var remLabel = document.getElementById("remLabel");
     if (remLabel)
       remLabel.onkeypress = function (e) {
         if (e.keyCode === 13) {
-          var t = document.getElementById("remTime").value;
-          var l = remLabel.value;
-          var d = window.CCReminders.getSelectedDays();
-          document.getElementById("remTime").value = "";
-          remLabel.value = "";
-          window.CCReminders.add(t, l, d);
+          addRemBtn.click();
         }
       };
 
@@ -166,49 +243,23 @@
     var importFile = document.getElementById("importFile");
     if (importFile)
       importFile.onchange = function () {
-        if (importFile.files && importFile.files[0]) {
+        if (importFile.files && importFile.files[0])
           importData(importFile.files[0]);
-        }
       };
 
-    // triple toque en la hora para salir del kiosko
-    var timeEl = document.getElementById("time");
-    if (timeEl) {
-      var taps = 0;
-      var tapTimer;
-      timeEl.onclick = function () {
-        taps++;
-        clearTimeout(tapTimer);
-        tapTimer = setTimeout(function () {
-          if (taps >= 3) {
-            var st = window.CCState.state;
-            st.settings.kiosk = false;
-            window.CCState.save();
-            applySettings();
-          }
-          taps = 0;
-        }, 500);
-      };
-    }
+    bindFooterKioskExit();
+    bindTripleTapOnTime();
   }
-
-  function updateLayoutNoNotes() {
-    var st = window.CCState.state;
-    var hasNotes = st.notes && st.notes.length > 0;
-    var hasRems = st.reminders && st.reminders.length > 0;
-    document.body.classList.toggle("no-notes", !(hasNotes || hasRems));
-  }
-  window.CCLayout = { update: updateLayoutNoNotes };
 
   function init() {
     window.CCState.load();
     applySettings();
-    window.CCNotes.render();
-    window.CCReminders.render();
     window.CCClock.start();
+    window.CCNotes.renderToday();
+    window.CCReminders.renderToday();
     window.CCReminders.start();
-    window.CCLayout.update();
-    bind();
+    updateLayoutNoNotes();
+    bindUI();
   }
 
   init();
