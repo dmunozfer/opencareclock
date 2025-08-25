@@ -137,6 +137,9 @@
     var footer = document.getElementById("footer");
     if (!footer) return;
     var timer;
+    var isTouchDevice =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
     function clear() {
       if (timer) {
         clearTimeout(timer);
@@ -168,12 +171,20 @@
         if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
       }, 2000); // 2s pulsación larga
     }
-    footer.onmousedown = start;
-    footer.onmouseup = clear;
-    footer.onmouseleave = clear;
-    footer.ontouchstart = start;
-    footer.ontouchend = clear;
-    footer.ontouchcancel = clear;
+
+    // En dispositivos táctiles usar solo eventos touch, en desktop usar mouse
+    if (isTouchDevice) {
+      footer.ontouchstart = function (e) {
+        e.preventDefault(); // evitar zoom
+        start();
+      };
+      footer.ontouchend = clear;
+      footer.ontouchcancel = clear;
+    } else {
+      footer.onmousedown = start;
+      footer.onmouseup = clear;
+      footer.onmouseleave = clear;
+    }
   }
 
   // Plan B: triple toque en la hora
