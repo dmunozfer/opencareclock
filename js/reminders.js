@@ -9,6 +9,55 @@
     );
   }
 
+  function createIconSVG(kind) {
+    // kind: 'check' | 'clock' | 'alert'
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("fill", "currentColor");
+    if (kind === "check") {
+      path.setAttribute("d", "M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z");
+    } else if (kind === "clock") {
+      // use a bell instead for better recognition
+      path.setAttribute(
+        "d",
+        "M12 22a2 2 0 002-2h-4a2 2 0 002 2zm6-6V11a6 6 0 10-12 0v5l-2 2v1h16v-1l-2-2z"
+      );
+    } else {
+      // alert icon: outlined triangle + exclamation mark
+      var tri = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      tri.setAttribute("d", "M12 3L2 21h20L12 3z");
+      tri.setAttribute("fill", "none");
+      tri.setAttribute("stroke", "currentColor");
+      tri.setAttribute("stroke-width", "3");
+      tri.setAttribute("stroke-linejoin", "round");
+
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      line.setAttribute("d", "M12 9v6");
+      line.setAttribute("fill", "none");
+      line.setAttribute("stroke", "currentColor");
+      line.setAttribute("stroke-width", "3");
+      line.setAttribute("stroke-linecap", "round");
+
+      var dot = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+      dot.setAttribute("cx", "12");
+      dot.setAttribute("cy", "17");
+      dot.setAttribute("r", "1.2");
+      dot.setAttribute("fill", "currentColor");
+
+      svg.appendChild(tri);
+      svg.appendChild(line);
+      svg.appendChild(dot);
+      return svg;
+    }
+    svg.appendChild(path);
+    return svg;
+  }
+
   function getSelectedDays() {
     var boxes = document.getElementsByName("remDay");
     var out = [];
@@ -213,11 +262,12 @@
         iconWrap.className = "icon-wrap";
         var icon = document.createElement("div");
         icon.className = "icon";
-        icon.textContent = isCompleted(r.id)
-          ? "✓"
+        var svgKind = isCompleted(r.id)
+          ? "check"
           : statusFor(r) === "future"
-          ? "⏰"
-          : "!";
+          ? "clock"
+          : "alert";
+        icon.appendChild(createIconSVG(svgKind));
         iconWrap.appendChild(icon);
       }
 
@@ -297,7 +347,7 @@
         iconWrap2.className = "icon-wrap";
         var icon2 = document.createElement("div");
         icon2.className = "icon";
-        icon2.textContent = "✓";
+        icon2.appendChild(createIconSVG("check"));
         iconWrap2.appendChild(icon2);
 
         var t2 = document.createElement("div");
