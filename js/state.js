@@ -13,10 +13,10 @@
         kioskPin: "", // opcional, 4 dígitos
       },
       notes: [
-        // { id:'n1', text:'Beber agua', days:[1,2,3,4,5,6,0] }
+        // { id:'n1', text:'Beber agua', days:[1,2,3,4,5,6,0], active:true }
       ],
       reminders: [
-        // { id:'r1', label:'Pastillas comida', time:'14:00', days:[1,2,3,4,5,6,0] }
+        // { id:'r1', label:'Pastillas comida', time:'14:00', days:[1,2,3,4,5,6,0], active:true }
       ],
       // completados por fecha: { 'YYYY-MM-DD': { reminderId: true } }
       completedByDate: {},

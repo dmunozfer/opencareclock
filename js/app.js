@@ -79,16 +79,24 @@
     var hasNotes = false,
       hasRems = false;
 
-    // ¿Notas de hoy?
+    // ¿Notas de hoy? (solo activas)
     for (var i = 0; i < st.notes.length; i++) {
-      if (st.notes[i].days && st.notes[i].days.indexOf(dow) >= 0) {
+      if (
+        st.notes[i].days &&
+        st.notes[i].days.indexOf(dow) >= 0 &&
+        st.notes[i].active !== false
+      ) {
         hasNotes = true;
         break;
       }
     }
-    // ¿Recordatorios de hoy?
+    // ¿Recordatorios de hoy? (solo activos)
     for (var j = 0; j < st.reminders.length; j++) {
-      if (st.reminders[j].days && st.reminders[j].days.indexOf(dow) >= 0) {
+      if (
+        st.reminders[j].days &&
+        st.reminders[j].days.indexOf(dow) >= 0 &&
+        st.reminders[j].active !== false
+      ) {
         hasRems = true;
         break;
       }

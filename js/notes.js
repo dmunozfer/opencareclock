@@ -24,7 +24,12 @@
     // Debug: ver qué días se están pasando
     console.log("Añadiendo nota:", text, "con días:", days);
 
-    st.notes.push({ id: "n" + new Date().getTime(), text: text, days: days });
+    st.notes.push({
+      id: "n" + new Date().getTime(),
+      text: text,
+      days: days,
+      active: true,
+    });
     window.CCState.save();
     renderToday();
   }
@@ -49,6 +54,18 @@
     renderToday();
   }
 
+  function toggleActive(id) {
+    var st = window.CCState.state;
+    for (var i = 0; i < st.notes.length; i++) {
+      if (st.notes[i].id === id) {
+        st.notes[i].active = !st.notes[i].active;
+        break;
+      }
+    }
+    window.CCState.save();
+    renderToday();
+  }
+
   function renderToday() {
     var st = window.CCState.state;
     var dow = new Date().getDay();
@@ -57,11 +74,11 @@
     list.innerHTML = "";
     var any = false;
 
-    // KIOSKO: solo notas del día actual
+    // KIOSKO: solo notas del día actual y activas
     if (st.settings.kiosk) {
       for (var i = 0; i < st.notes.length; i++) {
         var n = st.notes[i];
-        if (n.days && n.days.indexOf(dow) >= 0) {
+        if (n.days && n.days.indexOf(dow) >= 0 && n.active !== false) {
           any = true;
           var li = document.createElement("li");
           var textEl = document.createElement("div");
@@ -78,15 +95,37 @@
         else notesCard.style.display = "";
       }
     } else {
-      // ADMINISTRACIÓN: mostrar todas las notas con badges de días
-      // En administración siempre mostrar la tarjeta, aunque no haya notas
+      // ADMINISTRACIÓN: mostrar TODAS las notas (activas e inactivas)
       var notesCard = document.getElementById("notesCard");
       if (notesCard) {
         notesCard.style.display = "";
       }
+
+      // Mostrar todas las notas, sin filtrar por día ni estado activo
       for (var i = 0; i < st.notes.length; i++) {
         var n = st.notes[i];
         var li = document.createElement("li");
+
+        // Aplicar clase si está inactiva
+        if (n.active === false) {
+          li.classList.add("inactive");
+        }
+
+        // Checkbox de activo/inactivo
+        var checkboxEl = document.createElement("input");
+        checkboxEl.type = "checkbox";
+        checkboxEl.checked = n.active !== false;
+        checkboxEl.className = "active-checkbox";
+        checkboxEl.onclick = (function (id) {
+          return function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            toggleActive(id);
+            return false;
+          };
+        })(n.id);
+        li.appendChild(checkboxEl);
 
         // Contenido principal
         var textEl = document.createElement("div");
@@ -108,9 +147,17 @@
         }
         li.appendChild(daysEl);
 
-        // Borrado con clic
+        // Borrado con clic (pero no en el checkbox)
         li.onclick = (function (id) {
-          return function () {
+          return function (e) {
+            // No borrar si se hizo click en el checkbox o sus elementos hijos
+            if (
+              e.target &&
+              (e.target.type === "checkbox" ||
+                e.target.closest(".active-checkbox"))
+            ) {
+              return;
+            }
             if (confirm("¿Eliminar nota?")) delNote(id);
           };
         })(n.id);
@@ -125,6 +172,7 @@
   window.CCNotes = {
     add: addNote,
     del: delNote,
+    toggleActive: toggleActive,
     renderToday: renderToday,
     getSelectedDays: getSelectedDays,
   };

@@ -83,6 +83,7 @@
       time: time,
       label: label,
       days: days,
+      active: true,
     });
     window.CCState.save();
     renderToday();
@@ -101,6 +102,18 @@
     for (var i = 0; i < st.reminders.length; i++) {
       if (st.reminders[i].id === id) {
         st.reminders.splice(i, 1);
+        break;
+      }
+    }
+    window.CCState.save();
+    renderToday();
+  }
+
+  function toggleActive(id) {
+    var st = window.CCState.state;
+    for (var i = 0; i < st.reminders.length; i++) {
+      if (st.reminders[i].id === id) {
+        st.reminders[i].active = !st.reminders[i].active;
         break;
       }
     }
@@ -150,7 +163,7 @@
 
   function applicableToday(rem) {
     var dow = new Date().getDay();
-    return rem.days && rem.days.indexOf(dow) >= 0;
+    return rem.days && rem.days.indexOf(dow) >= 0 && rem.active !== false;
   }
 
   function renderToday() {
@@ -164,11 +177,20 @@
       else ul.classList.add("admin-reminders");
     }
 
-    // Filtrar solo los de hoy y ordenar por hora
+    // En kiosko: filtrar solo los de hoy y activos
+    // En administración: mostrar todos
     var todayRems = [];
-    for (var i = 0; i < st.reminders.length; i++) {
-      var r = st.reminders[i];
-      if (applicableToday(r)) todayRems.push(r);
+    if (st.settings.kiosk) {
+      for (var i = 0; i < st.reminders.length; i++) {
+        var r = st.reminders[i];
+        if (applicableToday(r)) todayRems.push(r);
+      }
+    } else {
+      // En administración mostrar todos los recordatorios
+      for (var i = 0; i < st.reminders.length; i++) {
+        var r = st.reminders[i];
+        todayRems.push(r);
+      }
     }
     todayRems.sort(function (a, b) {
       return a.time < b.time ? -1 : a.time > b.time ? 1 : 0;
@@ -200,6 +222,27 @@
         var lia = document.createElement("li");
         lia.className = "reminder admin";
 
+        // Aplicar clase si está inactivo
+        if (ra.active === false) {
+          lia.classList.add("inactive");
+        }
+
+        // Checkbox de activo/inactivo
+        var checkboxEl = document.createElement("input");
+        checkboxEl.type = "checkbox";
+        checkboxEl.checked = ra.active !== false;
+        checkboxEl.className = "active-checkbox";
+        checkboxEl.onclick = (function (id) {
+          return function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            toggleActive(id);
+            return false;
+          };
+        })(ra.id);
+        lia.appendChild(checkboxEl);
+
         var ta = document.createElement("div");
         ta.className = "time";
         ta.textContent = ra.time;
@@ -225,9 +268,17 @@
         lia.appendChild(la);
         lia.appendChild(actionEla);
 
-        // Borrado en administración
+        // Borrado en administración (pero no en el checkbox)
         (function (id, el) {
-          el.onclick = function () {
+          el.onclick = function (e) {
+            // No borrar si se hizo click en el checkbox o sus elementos hijos
+            if (
+              e.target &&
+              (e.target.type === "checkbox" ||
+                e.target.closest(".active-checkbox"))
+            ) {
+              return;
+            }
             if (confirm("¿Eliminar recordatorio?")) delReminder(id);
           };
         })(ra.id, lia);
@@ -320,7 +371,15 @@
       // Borrado unificado: click con confirmación (deshabilitado en kiosko)
       if (!st.settings.kiosk) {
         (function (id, el) {
-          el.onclick = function () {
+          el.onclick = function (e) {
+            // No borrar si se hizo click en el botón de completar
+            if (
+              e.target &&
+              (e.target.className === "done-btn" ||
+                e.target.closest(".done-btn"))
+            ) {
+              return;
+            }
             if (confirm("¿Eliminar recordatorio?")) delReminder(id);
           };
         })(r.id, li);
@@ -438,6 +497,7 @@
   window.CCReminders = {
     add: addReminder,
     del: delReminder,
+    toggleActive: toggleActive,
     renderToday: renderToday,
     start: start,
     getSelectedDays: getSelectedDays,
