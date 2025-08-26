@@ -2,6 +2,12 @@
   function pad2(n) {
     return (n < 10 ? "0" : "") + n;
   }
+  function todayKey() {
+    var d = new Date();
+    return (
+      d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate())
+    );
+  }
 
   function getSelectedDays() {
     var boxes = document.getElementsByName("remDay");
@@ -334,6 +340,18 @@
   function checkAlerts() {
     var st = window.CCState.state;
     var now = new Date();
+    // Cambio de día en caliente (sin recargar la app)
+    var tk = todayKey();
+    if (st.lastSeenDate !== tk) {
+      st.completedByDate = {};
+      st.lastSeenDate = tk;
+      window.CCState.save();
+      // Re-render para aplicar filtro de día en notas y recordatorios
+      if (window.CCNotes && window.CCNotes.renderToday)
+        window.CCNotes.renderToday();
+      renderToday();
+      if (window.CCLayout && window.CCLayout.update) window.CCLayout.update();
+    }
     var cur = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
     if (now.getMinutes() !== lastMinute) {
       lastMinute = now.getMinutes();
