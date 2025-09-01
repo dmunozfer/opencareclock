@@ -16,12 +16,28 @@
       document.body.classList.add("admin-mode");
     }
 
-    // Escala
-    var root = document.getElementById("root"); // puede no existir ya, aplicamos a body
-    var scaleClasses = ["scale-100", "scale-120", "scale-140", "scale-160"];
-    for (var i = 0; i < scaleClasses.length; i++)
-      document.body.classList.remove(scaleClasses[i]);
-    document.body.classList.add("scale-" + st.settings.scale);
+    // Accesibilidad
+    var accessibilityClasses = ["accessibility-high", "accessibility-extreme"];
+    for (var i = 0; i < accessibilityClasses.length; i++)
+      document.body.classList.remove(accessibilityClasses[i]);
+    if (st.settings.accessibility === "high") {
+      document.body.classList.add("accessibility-high");
+    } else if (st.settings.accessibility === "extreme") {
+      document.body.classList.add("accessibility-extreme");
+    }
+
+    // Mostrar/ocultar mensaje de ayuda de accesibilidad
+    var accessibilityHelp = document.getElementById("accessibilityHelp");
+    if (accessibilityHelp) {
+      if (
+        st.settings.accessibility === "high" ||
+        st.settings.accessibility === "extreme"
+      ) {
+        accessibilityHelp.style.display = "block";
+      } else {
+        accessibilityHelp.style.display = "none";
+      }
+    }
 
     // Selects y títulos según modo
     var themeSel = document.getElementById("themeSel");
@@ -32,8 +48,7 @@
           : st.settings.theme === "light"
           ? "light"
           : "contrast";
-    var scaleSel = document.getElementById("scaleSel");
-    if (scaleSel) scaleSel.value = String(st.settings.scale);
+
     var hourSel = document.getElementById("hourSel");
     if (hourSel) hourSel.value = String(st.settings.hourFormat);
     var secChk = document.getElementById("secChk");
@@ -335,14 +350,7 @@
         window.CCState.save();
         applySettings();
       };
-    var scaleSel = document.getElementById("scaleSel");
-    if (scaleSel)
-      scaleSel.onchange = function () {
-        var st = window.CCState.state;
-        st.settings.scale = parseInt(scaleSel.value, 10);
-        window.CCState.save();
-        applySettings();
-      };
+
     var hourSel = document.getElementById("hourSel");
     if (hourSel)
       hourSel.onchange = function () {
@@ -357,6 +365,18 @@
         st.settings.showSeconds = !!secChk.checked;
         window.CCState.save();
       };
+
+    var accessibilitySel = document.getElementById("accessibilitySel");
+    if (accessibilitySel) {
+      var st = window.CCState.state;
+      accessibilitySel.value = st.settings.accessibility || "normal";
+      accessibilitySel.onchange = function () {
+        var st = window.CCState.state;
+        st.settings.accessibility = accessibilitySel.value;
+        window.CCState.save();
+        applySettings();
+      };
+    }
 
     var btnKiosk = document.getElementById("btnKiosk");
     if (btnKiosk)
@@ -383,6 +403,50 @@
 
     bindFooterKioskExit();
     bindTripleTapOnTime();
+
+    // Atajo de teclado para accesibilidad: Alt+A
+    document.addEventListener("keydown", function (e) {
+      if (e.altKey && e.key === "a") {
+        e.preventDefault();
+        var st = window.CCState.state;
+        var currentMode = st.settings.accessibility || "normal";
+        var modes = ["normal", "high", "extreme"];
+        var currentIndex = modes.indexOf(currentMode);
+        var nextIndex = (currentIndex + 1) % modes.length;
+        st.settings.accessibility = modes[nextIndex];
+        window.CCState.save();
+        applySettings();
+
+        // Mostrar notificación temporal
+        showAccessibilityNotification(modes[nextIndex]);
+      }
+    });
+  }
+
+  function showAccessibilityNotification(mode) {
+    var notification = document.createElement("div");
+    notification.className = "accessibility-notification";
+    notification.textContent =
+      "Tamaño botones: " +
+      (mode === "normal"
+        ? "Normal"
+        : mode === "high"
+        ? "Grande"
+        : "Muy grande");
+    document.body.appendChild(notification);
+
+    setTimeout(function () {
+      notification.classList.add("show");
+    }, 100);
+
+    setTimeout(function () {
+      notification.classList.remove("show");
+      setTimeout(function () {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 2000);
   }
 
   function init() {

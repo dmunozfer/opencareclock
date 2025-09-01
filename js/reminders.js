@@ -339,7 +339,7 @@
         actionEl.className = "action-wrap";
         var btn = document.createElement("button");
         btn.className = "done-btn";
-        btn.title = "Marcar como hecho";
+        btn.title = "Click aquí o en cualquier parte de la fila";
         btn.textContent = "";
         btn.onclick = (function (id) {
           return function (e) {
@@ -368,8 +368,26 @@
       li.appendChild(l);
       li.appendChild(actionEl);
 
-      // Borrado unificado: click con confirmación (deshabilitado en kiosko)
-      if (!st.settings.kiosk) {
+      // KIOSKO: toda la fila clickeable para marcar como hecho/no hecho
+      if (st.settings.kiosk) {
+        (function (id, el) {
+          el.onclick = function (e) {
+            // Evitar doble ejecución si se hace click en el botón
+            if (
+              e.target &&
+              (e.target.className === "done-btn" ||
+                e.target.closest(".done-btn"))
+            ) {
+              return;
+            }
+            toggleComplete(id);
+          };
+          // Hacer que la fila parezca clickeable
+          el.style.cursor = "pointer";
+          el.title = "Click para marcar como hecho/no hecho";
+        })(r.id, li);
+      } else {
+        // ADMINISTRACIÓN: borrado con confirmación
         (function (id, el) {
           el.onclick = function (e) {
             // No borrar si se hizo click en el botón de completar
@@ -422,7 +440,7 @@
         actionEl2.className = "action-wrap";
         var btn2 = document.createElement("button");
         btn2.className = "done-btn";
-        btn2.title = "Marcar como hecho";
+        btn2.title = "Click aquí o en cualquier parte de la fila";
         btn2.textContent = "";
         btn2.onclick = (function (id) {
           return function (e) {
@@ -436,6 +454,24 @@
         li2.appendChild(t2);
         li2.appendChild(l2);
         li2.appendChild(actionEl2);
+
+        // KIOSKO: toda la fila clickeable para marcar como hecho/no hecho
+        (function (id, el) {
+          el.onclick = function (e) {
+            // Evitar doble ejecución si se hace click en el botón
+            if (
+              e.target &&
+              (e.target.className === "done-btn" ||
+                e.target.closest(".done-btn"))
+            ) {
+              return;
+            }
+            toggleComplete(id);
+          };
+          // Hacer que la fila parezca clickeable
+          el.style.cursor = "pointer";
+          el.title = "Click para marcar como hecho/no hecho";
+        })(rc.id, li2);
 
         ul.appendChild(li2);
       }

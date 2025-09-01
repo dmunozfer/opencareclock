@@ -5,12 +5,12 @@
     state: {
       settings: {
         theme: "dark",
-        scale: 140,
         showSeconds: true,
         hourFormat: 24,
         kiosk: false,
         kioskPinEnabled: false,
         kioskPin: "", // opcional, 4 dígitos
+        accessibility: "normal", // normal, high, extreme
       },
       notes: [
         // { id:'n1', text:'Beber agua', days:[1,2,3,4,5,6,0], active:true }

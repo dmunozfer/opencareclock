@@ -100,22 +100,37 @@
       </label>
 
       <label>
-        Tamaño
-        <select class="select" id="scaleSel" aria-label="Tamaño de interfaz">
-          <option value="100">100%</option>
-          <option value="120">120%</option>
-          <option value="140" selected>140%</option>
-          <option value="160">160%</option>
-        </select>
-      </label>
-
-      <label>
         Formato
         <select class="select" id="hourSel" aria-label="Formato de hora">
           <option value="24">24h</option>
           <option value="12">12h</option>
         </select>
       </label>
+
+      <label
+        title="Normal: Botones de 56px | Alta: Botones de 72px | Extrema: Botones de 88px"
+      >
+        Tamaño botones
+        <select
+          class="select"
+          id="accessibilitySel"
+          aria-label="Tamaño de botones de recordatorios"
+        >
+          <option value="normal">Normal</option>
+          <option value="high">Grande</option>
+          <option value="extreme">Muy grande</option>
+        </select>
+      </label>
+      <div
+        id="accessibilityHelp"
+        class="accessibility-help"
+        style="display: none"
+      >
+        <span
+          >♿ Botones grandes activos - Más fáciles de tocar | Atajo:
+          Alt+A</span
+        >
+      </div>
 
       <label><input type="checkbox" id="secChk" /> Segundos</label>
 
